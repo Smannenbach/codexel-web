@@ -20,7 +20,7 @@ export interface AIResponse {
 }
 
 class AIService {
-  static async generateResponse(message: string, model: string = 'gpt-4'): Promise<AIResponse> {
+  async generateResponse(message: string, model: string = 'gpt-4'): Promise<AIResponse> {
     try {
       switch (model) {
         case 'gpt-4':
@@ -53,7 +53,7 @@ class AIService {
     }
   }
 
-  private static async callOpenAI(message: string, model: string): Promise<AIResponse> {
+  private async callOpenAI(message: string, model: string): Promise<AIResponse> {
     const response = await openai.chat.completions.create({
       model: model,
       messages: [
@@ -76,7 +76,7 @@ class AIService {
     };
   }
 
-  private static async callAnthropic(message: string): Promise<AIResponse> {
+  private async callAnthropic(message: string): Promise<AIResponse> {
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
@@ -98,7 +98,7 @@ class AIService {
     };
   }
 
-  private static async callGemini(message: string): Promise<AIResponse> {
+  private async callGemini(message: string): Promise<AIResponse> {
     const response = await gemini.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `You are a helpful AI assistant for Codexel.ai, an AI-powered application development platform. Provide clear, concise, and actionable responses.\n\nUser: ${message}`,
@@ -113,7 +113,7 @@ class AIService {
     };
   }
 
-  private static async callGrok(message: string, model: string): Promise<AIResponse> {
+  private async callGrok(message: string, model: string): Promise<AIResponse> {
     const response = await grok.chat.completions.create({
       model: model,
       messages: [
@@ -136,7 +136,7 @@ class AIService {
     };
   }
 
-  private static calculateCost(model: string, inputTokens: number, outputTokens: number): number {
+  private calculateCost(model: string, inputTokens: number, outputTokens: number): number {
     // Simplified cost calculation - in production you'd use actual pricing
     const rates = {
       'gpt-4': { input: 0.03, output: 0.06 },

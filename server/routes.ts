@@ -19,7 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Generate AI response
-      const aiResponse = await AIService.generateResponse(message, model || 'gpt-4');
+      const aiResponse = await aiService.generateResponse(message, model || 'gpt-4');
 
       // Create AI response message
       const response = await storage.createMessage({
