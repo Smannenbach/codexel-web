@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { AIService } from "./services/ai-service";
+import { aiService } from "./services/ai-service";
 import type { InsertMessage, InsertProject, InsertAgent } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {

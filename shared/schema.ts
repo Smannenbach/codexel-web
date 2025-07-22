@@ -16,11 +16,12 @@ export const users = pgTable("users", {
 
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
+  userId: text("user_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
   status: text("status").notNull().default("planning"), // planning, development, testing, completed
   progress: integer("progress").notNull().default(0),
+  totalCost: real("total_cost").default(0),
   config: jsonb("config"), // Project configuration and settings
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -28,17 +29,23 @@ export const projects = pgTable("projects", {
 
 export const agents = pgTable("agents", {
   id: serial("id").primaryKey(),
-  projectId: integer("project_id").notNull(),
   name: text("name").notNull(),
   role: text("role").notNull(),
   description: text("description"),
   status: text("status").notNull().default("idle"), // idle, active, working, completed
   model: text("model").notNull(),
   color: text("color").notNull(),
-  icon: text("icon").notNull(),
+  icon: text("icon"),
   config: jsonb("config"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const projectAgents = pgTable("project_agents", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").notNull(),
+  agentId: integer("agent_id").notNull().references(() => agents.id),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const messages = pgTable("messages", {

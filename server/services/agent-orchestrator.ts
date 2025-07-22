@@ -1,7 +1,7 @@
 import { aiService } from './ai-service';
 import { projectService } from './project-service';
 import { db } from '../db';
-import { messages, agents, type Agent } from '@shared/schema';
+import { messages, type Agent } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 interface TaskDefinition {

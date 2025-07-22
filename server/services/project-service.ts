@@ -1,6 +1,6 @@
 import { db } from '../db';
-import { projects, agents, messages, projectAgents, type Project, type Agent, type Message } from '@shared/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { projects, agents, messages, projectAgents, type Project } from '@shared/schema';
+import { eq, desc } from 'drizzle-orm';
 
 export class ProjectService {
   async createProject(name: string, description: string, userId: string): Promise<Project> {

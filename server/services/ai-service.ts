@@ -19,7 +19,7 @@ export interface AIResponse {
   cost?: number;
 }
 
-export class AIService {
+class AIService {
   static async generateResponse(message: string, model: string = 'gpt-4'): Promise<AIResponse> {
     try {
       switch (model) {
@@ -150,3 +150,5 @@ export class AIService {
     return (inputTokens * rate.input + outputTokens * rate.output) / 1000;
   }
 }
+
+export const aiService = new AIService();
