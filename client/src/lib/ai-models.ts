@@ -1,4 +1,6 @@
-import { AIModel, AIModelConfig } from '@/types/workspace';
+import { AIModelConfig } from '@/types/workspace';
+
+export type AIModel = 'gpt-4' | 'gpt-4-turbo' | 'gemini-ultra' | 'claude-3.5-sonnet' | 'moonshot-kimi' | 'qwen-2.5-max' | 'grok-2' | 'grok-2-vision';
 
 export const AI_MODELS: Record<AIModel, AIModelConfig> = {
   'gpt-4': {
@@ -75,7 +77,7 @@ export const AI_MODELS: Record<AIModel, AIModelConfig> = {
   }
 };
 
-export type AIModel = keyof typeof AI_MODELS;
+// Type already defined above
 
 export const getOptimalModelForTask = (taskType: string): AIModel => {
   switch (taskType) {
