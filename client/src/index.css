@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(240, 10%, 3.9%);
+  --muted: hsl(240, 4.8%, 95.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(240, 10%, 3.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(240, 10%, 3.9%);
+  --border: hsl(240, 5.9%, 90%);
+  --input: hsl(240, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 4.8%, 95.9%);
+  --secondary-foreground: hsl(240, 9%, 10%);
+  --accent: hsl(240, 4.8%, 95.9%);
+  --accent-foreground: hsl(240, 9%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 5%, 64.9%);
+  --radius: 0.5rem;
+
+  /* Workspace specific colors */
+  --workspace-bg: hsl(240, 10%, 3.9%);
+  --workspace-sidebar: hsl(240, 10%, 8%);
+  --workspace-panel: hsl(240, 9%, 11%);
+  --workspace-border: hsl(240, 6%, 20%);
+  --workspace-accent-purple: hsl(271, 78%, 66%);
+  --workspace-accent-green: hsl(158, 100%, 51%);
+  --workspace-accent-blue: hsl(217, 91%, 60%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+
+  /* Dark theme workspace colors */
+  --workspace-bg: hsl(240, 10%, 3.9%);
+  --workspace-sidebar: hsl(240, 10%, 8%);
+  --workspace-panel: hsl(240, 9%, 11%);
+  --workspace-border: hsl(240, 6%, 20%);
+  --workspace-accent-purple: hsl(271, 78%, 66%);
+  --workspace-accent-green: hsl(158, 100%, 51%);
+  --workspace-accent-blue: hsl(217, 91%, 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .workspace-bg {
+    background-color: var(--workspace-bg);
+  }
+  
+  .workspace-sidebar {
+    background-color: var(--workspace-sidebar);
+  }
+  
+  .workspace-panel {
+    background-color: var(--workspace-panel);
+  }
+  
+  .workspace-border {
+    border-color: var(--workspace-border);
+  }
+  
+  .workspace-accent-purple {
+    color: var(--workspace-accent-purple);
+  }
+  
+  .workspace-accent-green {
+    color: var(--workspace-accent-green);
+  }
+  
+  .workspace-accent-blue {
+    color: var(--workspace-accent-blue);
+  }
+
+  .resize-handle {
+    @apply w-1 bg-transparent cursor-col-resize relative;
+  }
+  
+  .resize-handle:hover::after {
+    content: '';
+    @apply absolute top-0 left-1/2 transform -translate-x-1/2 w-0.5 h-full;
+    background-color: var(--workspace-accent-purple);
+  }
+  
+  .agent-card {
+    background: linear-gradient(135deg, hsl(240, 9%, 11%) 0%, hsl(240, 6%, 20%) 100%);
+    @apply border workspace-border;
+  }
+  
+  .agent-active {
+    background: linear-gradient(135deg, hsl(271, 78%, 66%) 0%, hsl(271, 78%, 76%) 100%);
+    @apply border-purple-400;
+    box-shadow: 0 0 20px hsla(271, 78%, 66%, 0.3);
+  }
+  
+  .message-bubble {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .typing-indicator {
+    animation: pulse 1.5s infinite;
+  }
+  
+  .progress-bar {
+    background: linear-gradient(90deg, var(--workspace-accent-green) 0%, var(--workspace-accent-blue) 100%);
+  }
+  
+  .glassmorphism {
+    background: hsla(240, 9%, 11%, 0.8);
+    backdrop-filter: blur(10px);
+    @apply border border-white/10;
+  }
+}
