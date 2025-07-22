@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
-import { WorkspaceLayout } from '@/components/workspace/WorkspaceLayout';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Brain, Code, Palette, Users, Rocket, Star, TrendingUp, Globe, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
@@ -24,26 +22,26 @@ interface Statistic {
 const features: Feature[] = [
   {
     icon: Brain,
-    title: '8 AI Models',
-    description: 'GPT-4, Claude, Gemini, Grok-2, and more',
+    title: 'Perfect AI Memory',
+    description: 'Google Vertex AI hive mind - never forgets',
     color: 'text-purple-500'
   },
   {
-    icon: Users,
-    title: 'AI Agent Teams',
-    description: 'Specialized agents working together',
+    icon: Code,
+    title: 'Canvas Interface',
+    description: 'Superior to ChatGPT Canvas - multi-file editing',
     color: 'text-blue-500'
   },
   {
-    icon: Code,
-    title: 'Full-Stack Development',
-    description: 'Frontend, backend, and database',
+    icon: Globe,
+    title: '17+ App Integrations',
+    description: 'LinkedIn, GitHub, Slack automation built-in',
     color: 'text-green-500'
   },
   {
-    icon: Rocket,
-    title: 'Deploy Anywhere',
-    description: 'One-click deployment to production',
+    icon: Shield,
+    title: 'Queue System',
+    description: 'Never interrupts AI work - perfect focus',
     color: 'text-orange-500'
   }
 ];
@@ -77,20 +75,15 @@ const statistics: Statistic[] = [
 
 export default function Home() {
   const [, navigate] = useLocation();
-  const [showWorkspace, setShowWorkspace] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
 
   const handleCreateProject = async () => {
     setIsCreatingProject(true);
-    // Simulate project creation
+    // Navigate to workspace after short delay
     setTimeout(() => {
-      setShowWorkspace(true);
+      navigate('/workspace');
     }, 1500);
   };
-
-  if (showWorkspace) {
-    return <WorkspaceLayout />;
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,12 +98,12 @@ export default function Home() {
             </Badge>
             
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Build Complete Apps with AI Teams
+              Codexel.ai - The #1 AI App Platform
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Codexel.ai brings together 8 powerful AI models working as specialized development teams. 
-              From idea to deployment in minutes, not months.
+              Revolutionary Canvas interface with perfect memory, autonomous agents, and 17+ app integrations.
+              Build production apps faster than ChatGPT Canvas, Cursor, or Replit.
             </p>
             
             <div className="flex gap-4 justify-center">
