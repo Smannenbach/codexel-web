@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #1e1e1e;
+  color: #fff;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.editor {
+  flex: 1;
+}
+.controls {
+  padding: 10px;
+  background: #333;
+}
+.controls button {
+  margin-right: 5px;
+}
+#output {
+  padding: 10px;
+  background: #222;
+  flex: 0 0 150px;
+  overflow: auto;
+}
