@@ -149,6 +149,11 @@ class AIService {
     const rate = rates[model as keyof typeof rates] || { input: 0.001, output: 0.002 };
     return (inputTokens * rate.input + outputTokens * rate.output) / 1000;
   }
+
+  async sendMessage(systemPrompt: string, userMessage: string, model: string = 'gpt-4'): Promise<string> {
+    const response = await this.generateResponse(`${systemPrompt}\n\nUser: ${userMessage}`, model);
+    return response.content;
+  }
 }
 
 export const aiService = new AIService();

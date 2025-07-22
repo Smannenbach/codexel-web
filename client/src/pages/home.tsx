@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Brain, Code, Palette, Users, Rocket, Star, TrendingUp, Globe, Shield } from 'lucide-react';
-import { useNavigate } from 'wouter';
+import { useLocation } from 'wouter';
 
 interface Feature {
   icon: any;
@@ -76,7 +76,7 @@ const statistics: Statistic[] = [
 ];
 
 export default function Home() {
-  const [, navigate] = useNavigate();
+  const [, navigate] = useLocation();
   const [showWorkspace, setShowWorkspace] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
 

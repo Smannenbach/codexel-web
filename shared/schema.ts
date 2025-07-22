@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal, varchar, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -96,12 +96,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
   profileImageUrl: true,
 });
 
-export const insertProjectSchema = createInsertSchema(projects).pick({
-  userId: true,
-  name: true,
-  description: true,
-  status: true,
-  config: true,
+export const insertProjectSchema = createInsertSchema(projects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  progress: true,
+  totalCost: true,
 });
 
 export const insertMessageSchema = createInsertSchema(messages).pick({
@@ -113,15 +113,11 @@ export const insertMessageSchema = createInsertSchema(messages).pick({
   metadata: true,
 });
 
-export const insertAgentSchema = createInsertSchema(agents).pick({
-  projectId: true,
-  name: true,
-  role: true,
-  description: true,
-  model: true,
-  color: true,
-  icon: true,
-  config: true,
+export const insertAgentSchema = createInsertSchema(agents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  status: true,
 });
 
 export const insertChecklistItemSchema = createInsertSchema(checklistItems).pick({
