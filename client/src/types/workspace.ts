@@ -44,7 +44,7 @@ export interface ChecklistItem {
   priority: 'low' | 'medium' | 'high';
 }
 
-export type AIModel = 'gpt-4' | 'gpt-4-turbo' | 'gemini-ultra' | 'claude-3.5-sonnet' | 'moonshot-kimi' | 'qwen-2.5-max';
+export type AIModel = 'gpt-4' | 'gpt-4-turbo' | 'gemini-ultra' | 'claude-3.5-sonnet' | 'moonshot-kimi' | 'qwen-2.5-max' | 'grok-2' | 'grok-2-vision';
 
 export interface AIModelConfig {
   id: AIModel;

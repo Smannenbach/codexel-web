@@ -1,13 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { AIService } from "./services/ai-service";
 import type { InsertMessage, InsertProject, InsertAgent } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, projectId } = req.body;
+      const { message, projectId, model } = req.body;
       
       // Create user message
       await storage.createMessage({
@@ -15,23 +16,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: 'user',
         content: message,
         model: null,
-        inputTokens: null,
-        outputTokens: null,
-        cost: null,
       });
+
+      // Generate AI response
+      const aiResponse = await AIService.generateResponse(message, model || 'gpt-4');
 
       // Create AI response message
       const response = await storage.createMessage({
         projectId: projectId || 1,
         role: 'assistant', 
-        content: `I received your message: "${message}". This is a demo response.`,
-        model: 'demo-model',
-        inputTokens: 10,
-        outputTokens: 20,
-        cost: 0.001,
+        content: aiResponse.content,
+        model: aiResponse.model,
       });
 
-      res.json({ content: response.content, model: response.model });
+      res.json({ 
+        content: response.content, 
+        model: response.model
+      });
     } catch (error) {
       console.error("Chat error:", error);
       res.status(500).json({ message: "Chat failed" });
@@ -45,9 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: 1,
         name: req.body.name || "New Project",
         description: req.body.description || "",
-        requirements: [],
-        techStack: [],
-        status: 'active',
+        status: 'planning',
       });
 
       res.json(project);
@@ -64,8 +63,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         projectId: req.body.projectId || 1,
         name: req.body.name || "Agent",
         role: req.body.role || "developer",
-        capabilities: [],
-        currentTask: null,
+        model: req.body.model || "gpt-4",
+        color: req.body.color || "#3B82F6",
+        icon: req.body.icon || "🤖",
       });
 
       res.json(agent);

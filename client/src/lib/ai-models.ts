@@ -54,6 +54,24 @@ export const AI_MODELS: Record<AIModel, AIModelConfig> = {
     quality: 8,
     speed: 9,
     capabilities: ['code', 'reasoning', 'open-source']
+  },
+  'grok-2-vision': {
+    id: 'grok-2-vision',
+    name: 'Grok 2 Vision',
+    provider: 'xAI',
+    cost: 3,
+    quality: 9,
+    speed: 8,
+    capabilities: ['multimodal', 'reasoning', 'code', 'analysis', 'vision']
+  },
+  'grok-2': {
+    id: 'grok-2',
+    name: 'Grok 2',
+    provider: 'xAI',
+    cost: 2,
+    quality: 8,
+    speed: 9,
+    capabilities: ['reasoning', 'code', 'analysis', 'cost-effective']
   }
 };
 
@@ -72,6 +90,12 @@ export const getOptimalModelForTask = (taskType: string): AIModel => {
       return 'gemini-ultra';
     case 'testing':
       return 'qwen-2.5-max';
+    case 'analysis':
+    case 'review':
+      return 'grok-2';
+    case 'vision':
+    case 'image':
+      return 'grok-2-vision';
     default:
       return 'gpt-4';
   }

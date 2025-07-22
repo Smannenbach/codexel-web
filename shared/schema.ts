@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, decimal, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -48,6 +48,9 @@ export const messages = pgTable("messages", {
   role: text("role").notNull(), // user, assistant
   agentId: integer("agent_id"),
   model: text("model"),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  cost: integer("cost_cents"), // Cost in cents
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow(),
 });
