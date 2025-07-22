@@ -7,7 +7,7 @@ import { AgentStatus } from '@/components/workspace/AgentStatus';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import type { Project, Agent, Message } from '@shared/schema';
+import type { Project, Agent, Message, ChecklistItem } from '@shared/schema';
 
 export default function Workspace() {
   const [, navigate] = useLocation();
@@ -15,12 +15,17 @@ export default function Workspace() {
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
 
   // Fetch projects
-  const { data: projects = [], isLoading: projectsLoading } = useQuery({
+  const { data: projects = [], isLoading: projectsLoading } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
   });
 
   // Fetch selected project details
-  const { data: projectData, isLoading: projectLoading } = useQuery({
+  const { data: projectData, isLoading: projectLoading } = useQuery<{
+    project: Project;
+    agents: Agent[];
+    messages: Message[];
+    checklist: ChecklistItem[];
+  }>({
     queryKey: ['/api/projects', selectedProjectId],
     enabled: !!selectedProjectId,
   });

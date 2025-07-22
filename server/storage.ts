@@ -1,160 +1,145 @@
-import { 
-  users, projects, agents, messages, checklistItems, aiUsage,
-  type User, type InsertUser, 
-  type Project, type InsertProject,
-  type Agent, type InsertAgent,
-  type Message, type InsertMessage,
-  type ChecklistItem, type InsertChecklistItem,
-  type AiUsage, type InsertAiUsage
-} from "@shared/schema";
+import { db } from './db';
+import { users, projects, agents, messages, checklistItems, projectAgents, usageTracking } from '@shared/schema';
+import { eq, desc } from 'drizzle-orm';
+import type { User, InsertUser, Project, InsertProject, Agent, InsertAgent, Message, InsertMessage, ChecklistItem, InsertChecklistItem } from '@shared/schema';
 
 export interface IStorage {
-  // User methods
+  // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
-  // Project methods
+
+  // Project operations
+  getAllProjects(): Promise<Project[]>;
   getProject(id: number): Promise<Project | undefined>;
   createProject(project: InsertProject): Promise<Project>;
-  
-  // Agent methods
+  updateProject(id: number, project: Partial<InsertProject>): Promise<Project>;
+
+  // Agent operations
+  getAgent(id: number): Promise<Agent | undefined>;
   getAgentsByProject(projectId: number): Promise<Agent[]>;
   createAgent(agent: InsertAgent): Promise<Agent>;
-  
-  // Message methods
+  updateAgent(id: number, agent: Partial<InsertAgent>): Promise<Agent>;
+
+  // Message operations
+  getMessage(id: number): Promise<Message | undefined>;
   getMessagesByProject(projectId: number): Promise<Message[]>;
   createMessage(message: InsertMessage): Promise<Message>;
-  
-  // Checklist methods
+
+  // Checklist operations
   getChecklistItemsByProject(projectId: number): Promise<ChecklistItem[]>;
   createChecklistItem(item: InsertChecklistItem): Promise<ChecklistItem>;
-  
-  // AI Usage methods
-  getAiUsageByUser(userId: number): Promise<AiUsage[]>;
-  createAiUsage(usage: InsertAiUsage): Promise<AiUsage>;
+  updateChecklistItem(id: number, item: Partial<InsertChecklistItem>): Promise<ChecklistItem>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User> = new Map();
-  private projects: Map<number, Project> = new Map();
-  private agents: Map<number, Agent> = new Map();
-  private messages: Map<number, Message> = new Map();
-  private checklistItems: Map<number, ChecklistItem> = new Map();
-  private aiUsage: Map<number, AiUsage> = new Map();
-  
-  private currentUserId = 1;
-  private currentProjectId = 1;
-  private currentAgentId = 1;
-  private currentMessageId = 1;
-  private currentChecklistId = 1;
-  private currentUsageId = 1;
-
-  // User methods
+export class DatabaseStorage implements IStorage {
+  // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { 
-      ...insertUser, 
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.users.set(id, user);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  // Project methods
-  async getProject(id: number): Promise<Project | undefined> {
-    return this.projects.get(id);
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
-  async createProject(insertProject: InsertProject): Promise<Project> {
-    const id = this.currentProjectId++;
-    const project: Project = {
-      ...insertProject,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.projects.set(id, project);
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  // Project operations
+  async getAllProjects(): Promise<Project[]> {
+    return await db.select().from(projects).orderBy(desc(projects.createdAt));
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
     return project;
   }
 
-  // Agent methods
-  async getAgentsByProject(projectId: number): Promise<Agent[]> {
-    return Array.from(this.agents.values()).filter(agent => agent.projectId === projectId);
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values(insertProject).returning();
+    return project;
   }
 
-  async createAgent(insertAgent: InsertAgent): Promise<Agent> {
-    const id = this.currentAgentId++;
-    const agent: Agent = {
-      ...insertAgent,
-      id,
-      status: 'idle',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.agents.set(id, agent);
+  async updateProject(id: number, data: Partial<InsertProject>): Promise<Project> {
+    const [project] = await db.update(projects)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(projects.id, id))
+      .returning();
+    return project;
+  }
+
+  // Agent operations
+  async getAgent(id: number): Promise<Agent | undefined> {
+    const [agent] = await db.select().from(agents).where(eq(agents.id, id));
     return agent;
   }
 
-  // Message methods
-  async getMessagesByProject(projectId: number): Promise<Message[]> {
-    return Array.from(this.messages.values()).filter(message => message.projectId === projectId);
+  async getAgentsByProject(projectId: number): Promise<Agent[]> {
+    const result = await db.select({
+      agent: agents
+    })
+    .from(projectAgents)
+    .innerJoin(agents, eq(projectAgents.agentId, agents.id))
+    .where(eq(projectAgents.projectId, projectId));
+    
+    return result.map(r => r.agent);
   }
 
-  async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = this.currentMessageId++;
-    const message: Message = {
-      ...insertMessage,
-      id,
-      createdAt: new Date()
-    };
-    this.messages.set(id, message);
+  async createAgent(insertAgent: InsertAgent): Promise<Agent> {
+    const [agent] = await db.insert(agents).values(insertAgent).returning();
+    return agent;
+  }
+
+  async updateAgent(id: number, data: Partial<InsertAgent>): Promise<Agent> {
+    const [agent] = await db.update(agents)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(agents.id, id))
+      .returning();
+    return agent;
+  }
+
+  // Message operations
+  async getMessage(id: number): Promise<Message | undefined> {
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
     return message;
   }
 
-  // Checklist methods
+  async getMessagesByProject(projectId: number): Promise<Message[]> {
+    return await db.select()
+      .from(messages)
+      .where(eq(messages.projectId, projectId))
+      .orderBy(messages.createdAt);
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const [message] = await db.insert(messages).values(insertMessage).returning();
+    return message;
+  }
+
+  // Checklist operations
   async getChecklistItemsByProject(projectId: number): Promise<ChecklistItem[]> {
-    return Array.from(this.checklistItems.values()).filter(item => item.projectId === projectId);
+    return await db.select()
+      .from(checklistItems)
+      .where(eq(checklistItems.projectId, projectId))
+      .orderBy(checklistItems.order);
   }
 
   async createChecklistItem(insertItem: InsertChecklistItem): Promise<ChecklistItem> {
-    const id = this.currentChecklistId++;
-    const item: ChecklistItem = {
-      ...insertItem,
-      id,
-      status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.checklistItems.set(id, item);
+    const [item] = await db.insert(checklistItems).values(insertItem).returning();
     return item;
   }
 
-  // AI Usage methods
-  async getAiUsageByUser(userId: number): Promise<AiUsage[]> {
-    return Array.from(this.aiUsage.values()).filter(usage => usage.userId === userId);
-  }
-
-  async createAiUsage(insertUsage: InsertAiUsage): Promise<AiUsage> {
-    const id = this.currentUsageId++;
-    const usage: AiUsage = {
-      ...insertUsage,
-      id,
-      createdAt: new Date()
-    };
-    this.aiUsage.set(id, usage);
-    return usage;
+  async updateChecklistItem(id: number, data: Partial<InsertChecklistItem>): Promise<ChecklistItem> {
+    const [item] = await db.update(checklistItems)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(checklistItems.id, id))
+      .returning();
+    return item;
   }
 }
 
-export const storage = new MemStorage();
+export const storage: IStorage = new DatabaseStorage();
