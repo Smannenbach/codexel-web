@@ -87,9 +87,9 @@ export default function Workspace() {
     await createProjectMutation.mutateAsync({ name, description });
   };
 
-  return (
-    <WorkspaceLayout
-      sidebar={
+  if (!selectedProjectId || !projectData) {
+    return (
+      <div className="flex h-screen">
         <ProjectSidebar
           projects={projects}
           selectedProjectId={selectedProjectId}
@@ -97,27 +97,36 @@ export default function Workspace() {
           onCreateProject={handleCreateProject}
           isLoading={projectsLoading}
         />
-      }
-      mainContent={
-        selectedProjectId && projectData ? (
-          <WorkspaceLayout
-            project={projectData.project}
-            agents={projectData.agents || []}
-            messages={projectData.messages || []}
-            checklist={projectData.checklist || []}
-            onSendMessage={handleSendMessage}
-            onToggleChecklistItem={async (itemId: number) => {
-              // Handle checklist toggle
-              await apiRequest('PATCH', `/api/checklist/${itemId}/toggle`);
-              queryClient.invalidateQueries({ queryKey: ['/api/projects', selectedProjectId] });
-            }}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            {projectsLoading ? "Loading projects..." : "Select or create a project to get started"}
-          </div>
-        )
-      }
-    />
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          {projectsLoading ? "Loading projects..." : "Select or create a project to get started"}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen">
+      <ProjectSidebar
+        projects={projects}
+        selectedProjectId={selectedProjectId}
+        onSelectProject={setSelectedProjectId}
+        onCreateProject={handleCreateProject}
+        isLoading={projectsLoading}
+      />
+      <div className="flex-1">
+        <WorkspaceLayout
+          project={projectData.project}
+          agents={projectData.agents || []}
+          messages={projectData.messages || []}
+          checklist={projectData.checklist || []}
+          onSendMessage={handleSendMessage}
+          onToggleChecklistItem={async (itemId: number) => {
+            // Handle checklist toggle
+            await apiRequest('PATCH', `/api/checklist/${itemId}/toggle`);
+            queryClient.invalidateQueries({ queryKey: ['/api/projects', selectedProjectId] });
+          }}
+        />
+      </div>
+    </div>
   );
 }

@@ -33,9 +33,9 @@ interface WorkspaceLayoutProps {
 
 export function WorkspaceLayout({
   project,
-  agents,
-  messages,
-  checklist,
+  agents = [],
+  messages = [],
+  checklist = [],
   onSendMessage,
   onToggleChecklistItem
 }: WorkspaceLayoutProps) {
