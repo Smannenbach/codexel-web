@@ -28,12 +28,16 @@ export function useChat() {
       const response = await apiRequest('POST', '/api/chat', {
         message: content,
         projectId: 1,
+        model: 'gpt-4',
       });
+
+      const data = await response.json();
+      console.log('Chat response data:', data); // Debug log
 
       const assistantMessage: Message = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: response.content || 'No response',
+        content: data.content || 'No response received',
         timestamp: new Date(),
       };
 
