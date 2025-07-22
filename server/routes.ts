@@ -11,6 +11,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { content, projectId, model } = req.body;
       
+      console.log("Chat request received:", { content, projectId, model });
+      
       if (!content || content.trim().length === 0) {
         return res.status(400).json({ message: "Content is required" });
       }
@@ -32,7 +34,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create context-aware response based on project type and conversation history
       let aiResponse = "";
       
-      if (content.toLowerCase().includes('loan officer') || content.toLowerCase().includes('lending')) {
+      console.log("Checking content for loan officer keywords:", content.toLowerCase());
+      
+      if (content.toLowerCase().includes('loan officer') || content.toLowerCase().includes('lending') || content.toLowerCase().includes('mortgage')) {
         aiResponse = `I'll help you create a professional loan officer website. Let me break this down into key components:
 
 **Website Structure:**
