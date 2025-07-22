@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Send } from 'lucide-react';
+import { Send, Sparkles } from 'lucide-react';
+import { ModelSelector } from './ModelSelector';
+import { AIModel } from '@/lib/ai-models';
 
 interface Message {
   id: number;
@@ -13,8 +15,8 @@ interface Message {
 
 interface ConversationPanelProps {
   messages: Message[];
-  selectedModel: string;
-  onModelChange: (model: string) => void;
+  selectedModel: AIModel;
+  onModelChange: (model: AIModel) => void;
   onSendMessage: (message: string) => void;
   isLoading: boolean;
 }
@@ -38,8 +40,16 @@ export function ConversationPanel({
   return (
     <div className="flex flex-col h-full bg-background">
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold">Conversation</h2>
-        <p className="text-sm text-muted-foreground">Chat with {selectedModel}</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold flex items-center">
+              <Sparkles className="h-5 w-5 mr-2 text-primary" />
+              Conversation
+            </h2>
+            <p className="text-sm text-muted-foreground">Chat with {selectedModel}</p>
+          </div>
+          <ModelSelector value={selectedModel} onChange={onModelChange} />
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

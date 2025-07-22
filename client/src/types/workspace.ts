@@ -44,10 +44,10 @@ export interface ChecklistItem {
   priority: 'low' | 'medium' | 'high';
 }
 
-export type AIModel = 'gpt-4' | 'gpt-4-turbo' | 'gemini-ultra' | 'claude-3.5-sonnet' | 'moonshot-kimi' | 'qwen-2.5-max' | 'grok-2' | 'grok-2-vision';
+// AIModel type moved to ai-models.ts
 
 export interface AIModelConfig {
-  id: AIModel;
+  id: string;
   name: string;
   provider: string;
   cost: number;

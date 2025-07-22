@@ -75,6 +75,8 @@ export const AI_MODELS: Record<AIModel, AIModelConfig> = {
   }
 };
 
+export type AIModel = keyof typeof AI_MODELS;
+
 export const getOptimalModelForTask = (taskType: string): AIModel => {
   switch (taskType) {
     case 'planning':

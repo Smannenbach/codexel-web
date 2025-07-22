@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import { AIModel } from '@/lib/ai-models';
 
 interface Message {
   id: number;
@@ -11,7 +12,7 @@ interface Message {
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('GPT-4');
+  const [selectedModel, setSelectedModel] = useState<AIModel>('gpt-4');
 
   const sendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -28,7 +29,7 @@ export function useChat() {
       const response = await apiRequest('POST', '/api/chat', {
         message: content,
         projectId: 1,
-        model: 'gpt-4',
+        model: selectedModel,
       });
 
       const data = await response.json();
