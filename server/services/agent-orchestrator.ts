@@ -226,7 +226,7 @@ export class AgentOrchestrator {
     // Multiple agents worked on this - synthesize their outputs
     let synthesis = 'Here\'s what the team accomplished:\n\n';
     
-    for (const [taskId, data] of results) {
+    for (const [taskId, data] of Array.from(results)) {
       synthesis += `**${data.agent}**: ${data.task}\n`;
       synthesis += `${data.result.substring(0, 200)}...\n\n`;
     }
@@ -239,8 +239,8 @@ export class AgentOrchestrator {
     
     if (!projectData) return null;
     
-    const projectAgent = projectData.projectAgents.find(
-      pa => pa.agent.role === role
+    const projectAgent = projectData.projectAgents?.find(
+      (pa: any) => pa.agent.role === role
     );
     
     return projectAgent?.agent || null;

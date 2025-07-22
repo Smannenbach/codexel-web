@@ -43,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/projects", async (req, res) => {
     try {
       const project = await storage.createProject({
-        userId: 1,
+        userId: "1",
         name: req.body.name || "New Project",
         description: req.body.description || "",
         status: 'planning',
@@ -60,12 +60,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/agents", async (req, res) => {
     try {
       const agent = await storage.createAgent({
-        projectId: req.body.projectId || 1,
         name: req.body.name || "Agent",
         role: req.body.role || "developer",
         model: req.body.model || "gpt-4",
         color: req.body.color || "#3B82F6",
         icon: req.body.icon || "🤖",
+        description: req.body.description,
       });
 
       res.json(agent);
