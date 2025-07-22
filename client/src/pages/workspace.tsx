@@ -4,6 +4,7 @@ import { WorkspaceLayout } from '@/components/workspace/WorkspaceLayout';
 import { ProjectSidebar } from '@/components/workspace/ProjectSidebar';
 import TemplateSetup from '@/components/workspace/TemplateSetup';
 import MarketingDashboard from '@/components/workspace/MarketingDashboard';
+import WorkspaceHeader from '@/components/workspace/WorkspaceHeader';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -100,6 +101,20 @@ export default function Workspace() {
     await createProjectMutation.mutateAsync({ name, description });
   };
 
+  // Show template setup if triggered
+  if (showTemplateSetup && selectedProjectId) {
+    return (
+      <TemplateSetup 
+        projectId={selectedProjectId} 
+        onComplete={() => {
+          setShowTemplateSetup(false);
+          // Clear template param from URL
+          setLocation('/workspace');
+        }}
+      />
+    );
+  }
+
   if (!selectedProjectId || !projectData) {
     return (
       <div className="flex h-screen">
@@ -126,19 +141,30 @@ export default function Workspace() {
         onCreateProject={handleCreateProject}
         isLoading={projectsLoading}
       />
-      <div className="flex-1">
-        <WorkspaceLayout
-          project={projectData.project}
-          agents={projectData.agents || []}
-          messages={projectData.messages || []}
-          checklist={projectData.checklist || []}
-          onSendMessage={handleSendMessage}
-          onToggleChecklistItem={async (itemId: number) => {
-            // Handle checklist toggle
-            await apiRequest('PATCH', `/api/checklist/${itemId}/toggle`);
-            queryClient.invalidateQueries({ queryKey: ['/api/projects', selectedProjectId] });
-          }}
+      <div className="flex-1 flex flex-col">
+        <WorkspaceHeader 
+          activeView={activeView}
+          onViewChange={setActiveView}
+          projectName={projectData.project.name}
         />
+        <div className="flex-1 overflow-hidden">
+          {activeView === 'marketing' ? (
+            <MarketingDashboard projectId={selectedProjectId} />
+          ) : (
+            <WorkspaceLayout
+              project={projectData.project}
+              agents={projectData.agents || []}
+              messages={projectData.messages || []}
+              checklist={projectData.checklist || []}
+              onSendMessage={handleSendMessage}
+              onToggleChecklistItem={async (itemId: number) => {
+                // Handle checklist toggle
+                await apiRequest('PATCH', `/api/checklist/${itemId}/toggle`);
+                queryClient.invalidateQueries({ queryKey: ['/api/projects', selectedProjectId] });
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -229,7 +229,7 @@ export default function MarketingDashboard({ projectId }: MarketingDashboardProp
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                            {post.createdAt ? format(new Date(post.createdAt), 'MMM d, yyyy') : 'Date not available'}
                           </div>
                           {post.keywords && (
                             <div className="flex items-center gap-1">
