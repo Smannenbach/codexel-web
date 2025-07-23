@@ -92,10 +92,16 @@ export default function ThreePanelWorkspace({
   const [panelSizes, setPanelSizes] = useState<number[]>([20, 45, 35]);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [lastPanelFocus, setLastPanelFocus] = useState<{ panel: string; time: number } | null>(null);
+  const [snapIndicators, setSnapIndicators] = useState<number[]>([]);
+  const [activeSnapLine, setActiveSnapLine] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
   const userId = 1; // TODO: Get from authenticated user
+  
+  // Snap points for common layouts
+  const SNAP_POINTS = [20, 25, 33.33, 40, 50, 60, 66.67, 75, 80];
+  const SNAP_THRESHOLD = 2; // Snap within 2% of target
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() && attachments.length === 0) return;
@@ -177,7 +183,34 @@ export default function ThreePanelWorkspace({
       className="h-screen bg-gray-950 workspace-container"
       autoSaveId="workspace-layout"
       onLayout={async (sizes) => {
-        setPanelSizes(sizes);
+        // Apply snapping logic
+        const snappedSizes = sizes.map((size, index) => {
+          // Check each snap point
+          for (const snapPoint of SNAP_POINTS) {
+            if (Math.abs(size - snapPoint) < SNAP_THRESHOLD) {
+              // Snap to this point
+              if (isResizing) {
+                setActiveSnapLine(snapPoint);
+                // Vibrate feedback on snap (if supported)
+                if ('vibrate' in navigator) {
+                  navigator.vibrate(10);
+                }
+              }
+              return snapPoint;
+            }
+          }
+          return size;
+        });
+        
+        // Ensure sizes still sum to 100
+        const sum = snappedSizes.reduce((a, b) => a + b, 0);
+        if (Math.abs(sum - 100) > 0.1) {
+          // Adjust the middle panel to compensate
+          snappedSizes[1] = snappedSizes[1] + (100 - sum);
+        }
+        
+        setPanelSizes(snappedSizes);
+        
         // Track layout change
         await apiRequest('POST', '/api/analytics/track', {
           userId,
@@ -185,7 +218,7 @@ export default function ThreePanelWorkspace({
           event: 'layout_change',
           data: { 
             configuration: { autoSaveId: 'workspace-layout' },
-            panelSizes: sizes 
+            panelSizes: snappedSizes 
           }
         });
       }}
@@ -246,7 +279,12 @@ export default function ThreePanelWorkspace({
 
       <ResizableHandle 
         withHandle 
-        onDragging={(dragging) => setIsResizing(dragging)} 
+        onDragging={(dragging) => {
+          setIsResizing(dragging);
+          if (!dragging) {
+            setActiveSnapLine(null);
+          }
+        }} 
       />
 
       {/* Middle Panel - Conversation */}
@@ -401,7 +439,12 @@ export default function ThreePanelWorkspace({
 
       <ResizableHandle 
         withHandle 
-        onDragging={(dragging) => setIsResizing(dragging)} 
+        onDragging={(dragging) => {
+          setIsResizing(dragging);
+          if (!dragging) {
+            setActiveSnapLine(null);
+          }
+        }} 
       />
 
       {/* Right Panel - Preview */}
@@ -484,6 +527,55 @@ export default function ThreePanelWorkspace({
               <span className="text-white font-mono">{Math.round(panelSizes[2])}%</span>
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Visual Snap Lines */}
+      {isResizing && (
+        <div className="absolute inset-0 pointer-events-none z-50">
+          {/* Grid lines for common layouts */}
+          {SNAP_POINTS.map((snapPoint) => (
+            <div
+              key={snapPoint}
+              className={`absolute top-0 bottom-0 w-px transition-all duration-75 ${
+                activeSnapLine === snapPoint 
+                  ? 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]' 
+                  : 'bg-white/10'
+              }`}
+              style={{ 
+                left: `${snapPoint}%`,
+                opacity: activeSnapLine === snapPoint ? 1 : 0.3
+              }}
+            >
+              {activeSnapLine === snapPoint && (
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-2 py-1 rounded-md">
+                  {Math.round(snapPoint)}%
+                </div>
+              )}
+            </div>
+          ))}
+          
+          {/* Snap indicators for second handle */}
+          {SNAP_POINTS.map((snapPoint) => {
+            const secondHandlePos = panelSizes[0] + snapPoint;
+            if (secondHandlePos < 80) { // Only show if it doesn't push the last panel too small
+              return (
+                <div
+                  key={`second-${snapPoint}`}
+                  className={`absolute top-0 bottom-0 w-px transition-all duration-75 ${
+                    Math.abs(panelSizes[0] + panelSizes[1] - secondHandlePos) < SNAP_THRESHOLD 
+                      ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' 
+                      : 'bg-white/10'
+                  }`}
+                  style={{ 
+                    left: `${secondHandlePos}%`,
+                    opacity: Math.abs(panelSizes[0] + panelSizes[1] - secondHandlePos) < SNAP_THRESHOLD ? 1 : 0.2
+                  }}
+                />
+              );
+            }
+            return null;
+          })}
         </div>
       )}
       
