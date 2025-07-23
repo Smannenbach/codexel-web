@@ -71,7 +71,7 @@ export default function AISalesAgent({
   const scrollRef = useRef<HTMLDivElement>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Initialize with greeting
+  // Initialize with personalized greeting based on template
   useEffect(() => {
     const initialMessage: AgentMessage = {
       id: '1',
@@ -170,15 +170,25 @@ export default function AISalesAgent({
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // AI responds based on user input
+    // AI responds intelligently based on user input with objection handling
     setTimeout(() => {
       if (inputValue.toLowerCase().includes('price') || inputValue.toLowerCase().includes('cost')) {
         addAgentMessage(
-          "Great question about pricing! Here's the thing - what's the cost of NOT having this? Every day without automation, you're losing potential clients to competitors who respond faster. The full package pays for itself in just 2-3 new clients!"
+          "I get it - budget concerns are real! But here's what I tell every successful law firm owner: What's the cost of NOT having leads? Missing just ONE case could cost you $50,000+. Our entire marketing stack costs less than what you charge for a single case consultation!"
         );
+        setTimeout(() => {
+          addAgentMessage("Plus, we have ROI guarantee - if you don't see measurable results in 90 days, we refund everything. How many marketing companies offer that?");
+        }, 5000);
+      } else if (inputValue.toLowerCase().includes('time') || inputValue.toLowerCase().includes('busy')) {
+        addAgentMessage(
+          "That's exactly WHY you need this! You're too busy to be manually posting on social media, writing blogs, and following up with leads. Time is the one thing you can't get back - every hour you spend on marketing tasks is an hour not practicing law. Let AI handle the marketing so you can focus on what you do best!"
+        );
+        setTimeout(() => {
+          addAgentMessage("Our clients typically save 20+ hours per week on marketing tasks. That's 20 more hours for billable work or family time. What's that worth to you?");
+        }, 4000);
       } else if (inputValue.toLowerCase().includes('think about it') || inputValue.toLowerCase().includes('later')) {
         addAgentMessage(
-          "I totally understand wanting to think it over! But here's what I've seen - law firms that wait usually come back in 3-6 months saying they wish they'd started sooner. Every month of delay is money left on the table. What if I could show you ROI in the first 30 days?"
+          "I totally understand wanting to think it over! But here's what I've seen - law firms that wait usually come back in 3-6 months saying they wish they'd started sooner. Your competitors are already using AI marketing. Every day of delay is potential clients going to them instead of you. What specific concerns can I address right now?"
         );
       } else {
         addAgentMessage(
