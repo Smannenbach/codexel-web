@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
 import { storage } from "./storage";
+import { voiceCloneService } from "./services/voiceCloning";
 import { aiService } from "./services/ai-service";
 import { AgentOrchestrator } from "./services/ai-orchestrator";
 import type { InsertMessage, InsertProject, InsertAgent } from "@shared/schema";
@@ -9,6 +11,12 @@ import { blogPosts, marketingCampaigns } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { z } from "zod";
+
+// Setup multer for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint
@@ -382,6 +390,61 @@ What specific type of website are you looking to create? (e.g., business, portfo
       res.json(email);
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate email campaign' });
+    }
+  });
+
+  // Voice cloning endpoints
+  app.post('/api/voice/clone', upload.single('audio'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'Audio file is required' });
+      }
+
+      const { name, description } = req.body;
+      
+      const voiceModel = await voiceCloneService.cloneVoice({
+        name: name || 'Custom Voice',
+        description: description || 'Voice clone created with Codexel.ai',
+        audioFile: req.file.buffer,
+        fileName: req.file.originalname || 'voice-sample.wav'
+      });
+
+      res.json(voiceModel);
+    } catch (error) {
+      console.error('Voice cloning error:', error);
+      res.status(500).json({ error: 'Failed to create voice clone' });
+    }
+  });
+
+  app.post('/api/voice/speak', async (req, res) => {
+    try {
+      const { text, voiceId } = req.body;
+      
+      if (!text || !voiceId) {
+        return res.status(400).json({ error: 'Text and voiceId are required' });
+      }
+
+      const audioBuffer = await voiceCloneService.generateSpeech(text, voiceId);
+      
+      res.set({
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.length,
+      });
+      
+      res.send(audioBuffer);
+    } catch (error) {
+      console.error('Speech generation error:', error);
+      res.status(500).json({ error: 'Failed to generate speech' });
+    }
+  });
+
+  app.get('/api/voice/list', async (req, res) => {
+    try {
+      const voices = await voiceCloneService.listVoices();
+      res.json({ voices });
+    } catch (error) {
+      console.error('Voice list error:', error);
+      res.status(500).json({ error: 'Failed to fetch voices' });
     }
   });
 

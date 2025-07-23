@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MarketingStack } from '@shared/marketing-stacks';
 import Avatar3D from './Avatar3D';
+import VoiceCloneSetup from './VoiceCloneSetup';
 
 interface AISalesAgentProps {
   selectedTemplate: any;
@@ -72,20 +73,32 @@ export default function AISalesAgent({
   const [avatarImage, setAvatarImage] = useState<string>();
   const [voiceRecording, setVoiceRecording] = useState<string>();
   const [isRecording, setIsRecording] = useState(false);
+  const [customVoiceId, setCustomVoiceId] = useState<string>();
+  const [showVoiceSetup, setShowVoiceSetup] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   // Initialize with personalized greeting and load saved avatar/voice
   useEffect(() => {
-    // Load saved avatar image if it exists
+    // Load saved avatar image and voice settings
     const savedAvatarImage = localStorage.getItem('codexel_avatar_image');
     const savedVoiceRecording = localStorage.getItem('codexel_voice_recording');
+    const savedCustomVoiceId = localStorage.getItem('codexel_custom_voice_id');
+    
     if (savedAvatarImage) {
       setAvatarImage(savedAvatarImage);
     }
     if (savedVoiceRecording) {
       setVoiceRecording(savedVoiceRecording);
+    }
+    if (savedCustomVoiceId) {
+      setCustomVoiceId(savedCustomVoiceId);
+    }
+    
+    // Check if we need to show voice setup
+    if (!savedCustomVoiceId) {
+      setShowVoiceSetup(true);
     }
 
     const initialMessage: AgentMessage = {
@@ -93,7 +106,7 @@ export default function AISalesAgent({
       role: 'agent',
       content: `Hi! I'm ${currentAgent.name}, your AI Success Strategist. I see you've chosen the ${selectedTemplate.name} template - excellent choice! 🎯
 
-${savedAvatarImage ? 'I can see your photo is already loaded - I look just like you!' : 'Upload your photo above to make me look exactly like you!'} ${savedVoiceRecording ? 'And I can speak with YOUR actual voice! This is the ultimate personalized AI experience!' : 'Record a voice sample so I can speak with your voice too - ultimate personalization!'}
+${savedAvatarImage ? 'I can see your photo is already loaded - I look just like you!' : 'Upload your photo above to make me look exactly like you!'} ${savedCustomVoiceId ? 'And I can speak with YOUR cloned voice! This is the ultimate personalized AI experience!' : 'Complete the voice setup to make me speak with your actual voice - ultimate personalization!'}
 
 Let me tell you about something that will save you MONTHS of development time and thousands of dollars...`,
       timestamp: new Date(),
@@ -116,10 +129,44 @@ Let me tell you about something that will save you MONTHS of development time an
     }, 16000);
   }, []);
 
-  const speakMessage = (text: string) => {
+  const speakMessage = async (text: string) => {
     if (!voiceEnabled) return;
 
-    // Use Web Speech API
+    setIsSpeaking(true);
+
+    // Use custom voice clone if available
+    if (customVoiceId) {
+      try {
+        const response = await fetch('/api/voice/speak', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text,
+            voiceId: customVoiceId
+          })
+        });
+
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          
+          audio.onended = () => {
+            setIsSpeaking(false);
+            URL.revokeObjectURL(audioUrl);
+          };
+          
+          await audio.play();
+          return;
+        }
+      } catch (error) {
+        console.error('Custom voice failed, falling back to browser TTS:', error);
+      }
+    }
+
+    // Fallback to Web Speech API
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.1;
     utterance.pitch = 1.0;
@@ -389,6 +436,32 @@ ${avatarImage ? 'With both your photo and voice, you now have the most advanced 
             />
           </CardContent>
         </Card>
+
+        {/* Voice Setup Modal */}
+        {showVoiceSetup && (
+          <Card className="fixed inset-4 z-50 bg-background/95 backdrop-blur-sm border shadow-2xl">
+            <CardContent className="p-6 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Complete Your Voice Setup</h2>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowVoiceSetup(false)}
+                >
+                  Skip for Now
+                </Button>
+              </div>
+              <VoiceCloneSetup 
+                onVoiceCloned={(voiceId) => {
+                  setCustomVoiceId(voiceId);
+                  localStorage.setItem('codexel_custom_voice_id', voiceId);
+                  setShowVoiceSetup(false);
+                  addAgentMessage("🎉 Perfect! I can now speak with your actual voice! This is revolutionary - your clients will hear YOUR voice speaking to them. This creates unprecedented trust and connection!");
+                }}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Chat Interface */}
         <Card className="h-[600px] flex flex-col">
