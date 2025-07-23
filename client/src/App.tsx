@@ -12,6 +12,7 @@ import Home from "@/pages/home";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Disclosures from "@/pages/disclosures";
+import LayoutMarketplace from "@/pages/layout-marketplace";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/workspace" component={Workspace} />
       <Route path="/templates" component={Templates} />
       <Route path="/demo" component={Demo} />
+      <Route path="/marketplace" component={LayoutMarketplace} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/disclosures" component={Disclosures} />

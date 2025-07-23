@@ -125,11 +125,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(checklistItems.order);
   }
 
-  async createChecklistItem(insertItem: InsertChecklistItem): Promise<ChecklistItem> {
-    const [item] = await db.insert(checklistItems).values(insertItem).returning();
-    return item;
-  }
-
   async getChecklistItem(id: number): Promise<ChecklistItem | undefined> {
     const [item] = await db.select().from(checklistItems).where(eq(checklistItems.id, id));
     return item;
@@ -152,6 +147,86 @@ export class DatabaseStorage implements IStorage {
       projectId,
       agentId,
     });
+  }
+
+  // Workspace Layout operations
+  async getWorkspaceLayouts(filters?: { category?: string; isPublic?: boolean; userId?: number }): Promise<WorkspaceLayout[]> {
+    let query = db.select().from(workspaceLayouts);
+    
+    if (filters) {
+      const conditions = [];
+      if (filters.category && filters.category !== 'all') {
+        conditions.push(eq(workspaceLayouts.category, filters.category));
+      }
+      if (filters.isPublic !== undefined) {
+        conditions.push(eq(workspaceLayouts.isPublic, filters.isPublic));
+      }
+      if (filters.userId !== undefined) {
+        conditions.push(eq(workspaceLayouts.userId, filters.userId));
+      }
+      
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+    }
+    
+    return await query.orderBy(desc(workspaceLayouts.downloads), desc(workspaceLayouts.rating));
+  }
+
+  async getWorkspaceLayout(id: number): Promise<WorkspaceLayout | undefined> {
+    const [layout] = await db.select().from(workspaceLayouts).where(eq(workspaceLayouts.id, id));
+    return layout;
+  }
+
+  async createWorkspaceLayout(insertLayout: InsertWorkspaceLayout): Promise<WorkspaceLayout> {
+    const [layout] = await db.insert(workspaceLayouts).values(insertLayout).returning();
+    return layout;
+  }
+
+  async updateWorkspaceLayout(id: number, data: Partial<WorkspaceLayout>): Promise<void> {
+    await db.update(workspaceLayouts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(workspaceLayouts.id, id));
+  }
+
+  async incrementLayoutDownloads(id: number): Promise<void> {
+    await db.update(workspaceLayouts)
+      .set({ 
+        downloads: sql`${workspaceLayouts.downloads} + 1`,
+        updatedAt: new Date() 
+      })
+      .where(eq(workspaceLayouts.id, id));
+  }
+
+  // Layout Rating operations
+  async createLayoutRating(insertRating: InsertLayoutRating): Promise<LayoutRating> {
+    const [rating] = await db.insert(layoutRatings).values(insertRating).returning();
+    await this.updateLayoutAverageRating(insertRating.layoutId);
+    return rating;
+  }
+
+  async getUserLayoutRating(layoutId: number, userId: number): Promise<LayoutRating | undefined> {
+    const [rating] = await db.select()
+      .from(layoutRatings)
+      .where(and(
+        eq(layoutRatings.layoutId, layoutId),
+        eq(layoutRatings.userId, userId)
+      ));
+    return rating;
+  }
+
+  async updateLayoutAverageRating(layoutId: number): Promise<void> {
+    const ratings = await db.select({
+      avgRating: sql<number>`AVG(${layoutRatings.rating})`.as('avg_rating')
+    })
+    .from(layoutRatings)
+    .where(eq(layoutRatings.layoutId, layoutId));
+    
+    const avgRating = ratings[0]?.avgRating || 0;
+    
+    await db.update(workspaceLayouts)
+      .set({ rating: avgRating })
+      .where(eq(workspaceLayouts.id, layoutId));
   }
 }
 

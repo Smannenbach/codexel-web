@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,12 +24,14 @@ import {
   Brain,
   Sparkles,
   Zap,
-  CircleCheckBig
+  CircleCheckBig,
+  Share2
 } from 'lucide-react';
 import { AI_MODELS } from '@/lib/ai-models';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { Agent, Message } from '@shared/schema';
+import ShareLayoutButton from './ShareLayoutButton';
 
 interface ThreePanelWorkspaceProps {
   projectId: number;
@@ -125,18 +127,53 @@ export default function ThreePanelWorkspace({
     }
   };
 
+  // Load and save panel configuration
+  useEffect(() => {
+    // The autoSaveId handles basic panel sizes, but we can extend it
+    const savedConfig = localStorage.getItem('workspace-advanced-config');
+    if (savedConfig) {
+      try {
+        const config = JSON.parse(savedConfig);
+        // Apply any advanced configuration here
+        if (config.previewDevice) setPreviewDevice(config.previewDevice);
+        if (config.selectedModel) setSelectedModel(config.selectedModel);
+      } catch (e) {
+        console.error('Failed to load workspace config:', e);
+      }
+    }
+  }, []);
+
+  // Save advanced configuration
+  useEffect(() => {
+    const config = {
+      previewDevice,
+      selectedModel,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem('workspace-advanced-config', JSON.stringify(config));
+  }, [previewDevice, selectedModel]);
+
   return (
     <ResizablePanelGroup 
       direction="horizontal" 
-      className="h-screen bg-gray-950"
+      className="h-screen bg-gray-950 workspace-container"
       autoSaveId="workspace-layout"
+      onLayout={(sizes) => {
+        // Additional handling for layout changes if needed
+        console.log('Layout changed:', sizes);
+      }}
     >
       {/* Left Panel - AI Team Dashboard */}
       <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
         <div className="h-full bg-gradient-to-br from-gray-900 to-gray-950 border-r border-gray-800">
           <div className="p-4 border-b border-gray-800">
-            <h2 className="text-lg font-semibold text-white mb-1">AI Team Dashboard</h2>
-            <p className="text-sm text-gray-400">Overall Progress</p>
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <h2 className="text-lg font-semibold text-white mb-1">AI Team Dashboard</h2>
+                <p className="text-sm text-gray-400">Overall Progress</p>
+              </div>
+              <ShareLayoutButton className="ml-2" />
+            </div>
             <div className="mt-2 bg-gray-800 rounded-full h-2">
               <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500" 
                 style={{ width: '41%' }} 

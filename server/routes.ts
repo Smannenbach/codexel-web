@@ -438,6 +438,10 @@ What specific type of website are you looking to create? (e.g., business, portfo
     }
   });
 
+  // Import and use layout routes
+  const layoutRoutes = await import('./routes/layouts').then(m => m.default);
+  app.use(layoutRoutes);
+
   const httpServer = createServer(app);
   return httpServer;
 }
