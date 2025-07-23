@@ -25,6 +25,7 @@ import type { MarketingStack } from '@shared/marketing-stacks';
 import Avatar3D from './Avatar3D';
 import VoiceCloneSetup from './VoiceCloneSetup';
 import VoiceControls from './VoiceControls';
+import EmergencyStopButton from './EmergencyStopButton';
 
 interface AISalesAgentProps {
   selectedTemplate: any;
@@ -217,7 +218,17 @@ Let me tell you about something that will save you MONTHS of development time an
     setIsAITalking(false);
     setVoiceEnabled(false); // Completely disable voice
     
-    console.log('All audio stopped, voice disabled');
+    // Override global speechSynthesis
+    (window as any).speechSynthesis = {
+      ...window.speechSynthesis,
+      speak: () => console.log('Speech blocked'),
+      cancel: () => {},
+      getVoices: () => [],
+      pending: false,
+      speaking: false,
+    };
+    
+    console.log('All audio stopped, voice disabled, speechSynthesis overridden');
   };
 
   const handleMute = () => {
@@ -451,6 +462,9 @@ Your AI-powered business is going to be unstoppable! 🚀`
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-6 relative">
+      {/* Emergency Stop Button - Always Visible */}
+      <EmergencyStopButton onClick={stopAllAudio} />
+      
       {/* Voice Controls - Emergency Mute */}
       <VoiceControls 
         isAITalking={isAITalking}

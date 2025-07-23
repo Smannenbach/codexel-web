@@ -77,13 +77,23 @@ export default function VoiceControls({
     // Call the parent's stop function
     onStopAll();
     
-    // Force a page refresh as last resort if audio continues
-    const forceStopTimeout = setTimeout(() => {
-      if (window.speechSynthesis.speaking) {
-        console.log('Force reloading page to stop persistent audio');
-        window.location.reload();
+    // More aggressive stopping
+    setTimeout(() => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
       }
-    }, 2000);
+    }, 100);
+    
+    // Nuclear option - disable all audio globally
+    try {
+      (window as any).speechSynthesis = {
+        ...window.speechSynthesis,
+        speak: () => {},
+        cancel: () => {},
+      };
+    } catch (e) {
+      console.log('Failed to override speechSynthesis', e);
+    }
 
     toast({
       title: "EMERGENCY STOP ACTIVATED",
@@ -94,7 +104,6 @@ export default function VoiceControls({
     // Reset emergency state after 5 seconds
     setTimeout(() => {
       setIsEmergencyMute(false);
-      clearTimeout(forceStopTimeout);
     }, 5000);
   };
 
@@ -143,7 +152,7 @@ export default function VoiceControls({
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={`fixed top-4 left-4 z-50 ${className}`}
+      className={`fixed top-4 left-4 z-[9999] ${className}`}
     >
       <Card className="bg-background/95 backdrop-blur-sm border-red-500/20 min-w-[300px]">
         <CardContent className="p-4">

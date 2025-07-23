@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mic, MicOff, Play, Square, Upload, Wand2, Check, X } from 'lucide-react';
+import { Mic, MicOff, Play, Square, Upload, Wand2, Check, X, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +14,7 @@ import NoiseReductionIndicator from './NoiseReductionIndicator';
 
 interface VoiceCloneSetupProps {
   onVoiceCloned: (voiceId: string) => void;
+  onClose?: () => void;
   className?: string;
 }
 
@@ -24,7 +25,7 @@ interface RecordingState {
   audioUrl: string | null;
 }
 
-export default function VoiceCloneSetup({ onVoiceCloned, className = '' }: VoiceCloneSetupProps) {
+export default function VoiceCloneSetup({ onVoiceCloned, onClose, className = '' }: VoiceCloneSetupProps) {
   const [recording, setRecording] = useState<RecordingState>({
     isRecording: false,
     duration: 0,
@@ -207,13 +208,27 @@ export default function VoiceCloneSetup({ onVoiceCloned, className = '' }: Voice
       
       <Card className={`w-full max-w-2xl mx-auto ${className}`}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wand2 className="w-5 h-5 text-purple-500" />
-          Voice Clone Setup
-        </CardTitle>
-        <CardDescription>
-          Create your personalized AI voice in 3 simple steps
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-purple-500" />
+              Voice Clone Setup
+            </CardTitle>
+            <CardDescription>
+              Create your personalized AI voice in 3 simple steps
+            </CardDescription>
+          </div>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <XCircle className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       
       <CardContent className="space-y-6">
