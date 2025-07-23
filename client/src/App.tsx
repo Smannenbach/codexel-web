@@ -9,6 +9,9 @@ import Templates from "@/pages/templates";
 import Demo from "@/pages/demo";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
+import Disclosures from "@/pages/disclosures";
 
 function Router() {
   return (
@@ -17,6 +20,9 @@ function Router() {
       <Route path="/workspace" component={Workspace} />
       <Route path="/templates" component={Templates} />
       <Route path="/demo" component={Demo} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/disclosures" component={Disclosures} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Zap, Brain, Code, Palette, Users, Rocket, Star, TrendingUp, Globe, Shield } from 'lucide-react';
 import { useLocation } from 'wouter';
+import Navigation from '@/components/ui/navigation';
+import CookieBanner from '@/components/ui/cookie-banner';
 
 interface Feature {
   icon: any;
@@ -87,6 +89,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 -z-10" />
@@ -198,6 +202,8 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+      
+      <CookieBanner />
     </div>
   );
 }
