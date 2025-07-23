@@ -25,13 +25,16 @@ import {
   Sparkles,
   Zap,
   CircleCheckBig,
-  Share2
+  Share2,
+  BarChart
 } from 'lucide-react';
 import { AI_MODELS } from '@/lib/ai-models';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { Agent, Message } from '@shared/schema';
 import ShareLayoutButton from './ShareLayoutButton';
+import AnalyticsDashboard from './AnalyticsDashboard';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface ThreePanelWorkspaceProps {
   projectId: number;
@@ -87,8 +90,12 @@ export default function ThreePanelWorkspace({
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isResizing, setIsResizing] = useState(false);
   const [panelSizes, setPanelSizes] = useState<number[]>([20, 45, 35]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [lastPanelFocus, setLastPanelFocus] = useState<{ panel: string; time: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  
+  const userId = 1; // TODO: Get from authenticated user
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() && attachments.length === 0) return;
@@ -96,6 +103,15 @@ export default function ThreePanelWorkspace({
     setIsLoading(true);
     try {
       await onSendMessage(inputValue, attachments);
+      
+      // Track analytics
+      await apiRequest('POST', '/api/analytics/track', {
+        userId,
+        projectId,
+        event: 'message_sent',
+        data: { model: selectedModel }
+      });
+      
       setInputValue('');
       setAttachments([]);
     } catch (error) {
@@ -160,8 +176,18 @@ export default function ThreePanelWorkspace({
       direction="horizontal" 
       className="h-screen bg-gray-950 workspace-container"
       autoSaveId="workspace-layout"
-      onLayout={(sizes) => {
+      onLayout={async (sizes) => {
         setPanelSizes(sizes);
+        // Track layout change
+        await apiRequest('POST', '/api/analytics/track', {
+          userId,
+          projectId,
+          event: 'layout_change',
+          data: { 
+            configuration: { autoSaveId: 'workspace-layout' },
+            panelSizes: sizes 
+          }
+        });
       }}
     >
       {/* Left Panel - AI Team Dashboard */}
@@ -232,7 +258,17 @@ export default function ThreePanelWorkspace({
                 <h2 className="text-lg font-semibold text-white">Conversation</h2>
                 <p className="text-sm text-gray-400">Chat with GPT-4</p>
               </div>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowAnalytics(true)}
+                  className="text-gray-400 hover:text-white"
+                  title="View Analytics"
+                >
+                  <BarChart className="w-5 h-5" />
+                </Button>
+                <Select value={selectedModel} onValueChange={setSelectedModel}>
                 <SelectTrigger className="w-48 bg-gray-800 border-gray-700">
                   <SelectValue />
                 </SelectTrigger>
@@ -249,6 +285,7 @@ export default function ThreePanelWorkspace({
                   ))}
                 </SelectContent>
               </Select>
+              </div>
             </div>
           </div>
 
@@ -449,6 +486,31 @@ export default function ThreePanelWorkspace({
           </div>
         </div>
       )}
+      
+      {/* Analytics Dialog */}
+      <Dialog open={showAnalytics} onOpenChange={setShowAnalytics}>
+        <DialogContent className="max-w-5xl max-h-[90vh] bg-gray-900 border-gray-800 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <BarChart className="w-6 h-6 text-purple-500" />
+              Workspace Analytics
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <AnalyticsDashboard 
+              projectId={projectId} 
+              userId={userId}
+              onApplyRecommendation={(recommendation) => {
+                // Apply the recommended panel sizes
+                const sizes = recommendation.recommendedPanelSizes;
+                // The ResizablePanelGroup will automatically save via autoSaveId
+                window.location.reload(); // Reload to apply new sizes
+                setShowAnalytics(false);
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </ResizablePanelGroup>
   );
 }

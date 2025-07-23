@@ -294,6 +294,57 @@ export type InsertWorkspaceLayout = typeof workspaceLayouts.$inferInsert;
 export type LayoutRating = typeof layoutRatings.$inferSelect;
 export type InsertLayoutRating = typeof layoutRatings.$inferInsert;
 
+// Workspace analytics table
+export const workspaceAnalytics = pgTable('workspace_analytics', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  projectId: integer('project_id').notNull().references(() => projects.id),
+  sessionId: varchar('session_id', { length: 255 }).notNull(),
+  layoutConfiguration: jsonb('layout_configuration').notNull(),
+  panelSizes: jsonb('panel_sizes').notNull(),
+  
+  // Productivity metrics
+  totalActiveTime: integer('total_active_time').notNull().default(0), // in seconds
+  messagesSent: integer('messages_sent').notNull().default(0),
+  aiInteractions: integer('ai_interactions').notNull().default(0),
+  panelResizeCount: integer('panel_resize_count').notNull().default(0),
+  focusTime: jsonb('focus_time').notNull().default({}), // time spent on each panel
+  
+  // User behavior patterns
+  mostUsedPanel: varchar('most_used_panel', { length: 50 }),
+  averageResponseTime: integer('average_response_time'), // in seconds
+  peakProductivityHour: integer('peak_productivity_hour'), // 0-23
+  preferredModelUsage: jsonb('preferred_model_usage').notNull().default({}),
+  
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => [
+  index('analytics_user_idx').on(table.userId),
+  index('analytics_project_idx').on(table.projectId),
+  index('analytics_session_idx').on(table.sessionId),
+]);
+
+// Layout recommendations table
+export const layoutRecommendations = pgTable('layout_recommendations', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  projectType: varchar('project_type', { length: 100 }),
+  recommendedLayout: jsonb('recommended_layout').notNull(),
+  recommendedPanelSizes: jsonb('recommended_panel_sizes').notNull(),
+  reason: text('reason').notNull(),
+  confidenceScore: real('confidence_score').notNull(), // 0-1
+  productivityImprovement: real('productivity_improvement'), // estimated percentage
+  accepted: boolean('accepted').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('recommendations_user_idx').on(table.userId),
+]);
+
+export type WorkspaceAnalytic = typeof workspaceAnalytics.$inferSelect;
+export type InsertWorkspaceAnalytic = typeof workspaceAnalytics.$inferInsert;
+export type LayoutRecommendation = typeof layoutRecommendations.$inferSelect;
+export type InsertLayoutRecommendation = typeof layoutRecommendations.$inferInsert;
+
 // Marketing campaigns table
 export const marketingCampaigns = pgTable("marketing_campaigns", {
   id: serial("id").primaryKey(),

@@ -1,7 +1,7 @@
 import { db } from './db';
-import { users, projects, agents, messages, checklistItems, projectAgents, workspaceLayouts, layoutRatings } from '@shared/schema';
+import { users, projects, agents, messages, checklistItems, projectAgents, workspaceLayouts, layoutRatings, workspaceAnalytics, layoutRecommendations } from '@shared/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
-import type { User, InsertUser, Project, InsertProject, Agent, InsertAgent, Message, InsertMessage, ChecklistItem, InsertChecklistItem, WorkspaceLayout, InsertWorkspaceLayout, LayoutRating, InsertLayoutRating } from '@shared/schema';
+import type { User, InsertUser, Project, InsertProject, Agent, InsertAgent, Message, InsertMessage, ChecklistItem, InsertChecklistItem, WorkspaceLayout, InsertWorkspaceLayout, LayoutRating, InsertLayoutRating, WorkspaceAnalytic, InsertWorkspaceAnalytic, LayoutRecommendation, InsertLayoutRecommendation } from '@shared/schema';
 
 export interface IStorage {
   // User operations
