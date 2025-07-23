@@ -217,15 +217,8 @@ Let me tell you about something that will save you MONTHS of development time an
     setIsAITalking(false);
     setVoiceEnabled(false); // Completely disable voice
     
-    // Override global speechSynthesis
-    (window as any).speechSynthesis = {
-      ...window.speechSynthesis,
-      speak: () => console.log('Speech blocked'),
-      cancel: () => {},
-      getVoices: () => [],
-      pending: false,
-      speaking: false,
-    };
+    // Note: Cannot override speechSynthesis as it's read-only
+    // Instead, we rely on the aggressive cancellation above
     
     console.log('All audio stopped, voice disabled, speechSynthesis overridden');
   };
@@ -464,7 +457,7 @@ Your AI-powered business is going to be unstoppable! 🚀`
       {/* Emergency Stop Button - Always Visible */}
       <EmergencyStopButton onClick={stopAllAudio} />
       
-      {/* Voice Controls - Emergency Mute */}
+      {/* Voice Controls - Simplified without duplicate stop button */}
       <VoiceControls 
         isAITalking={isAITalking}
         onMute={handleMute}

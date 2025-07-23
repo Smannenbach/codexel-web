@@ -35,18 +35,7 @@ export default function EmergencyStopButton({ onClick, className = '' }: Emergen
     // Call parent handler
     onClick();
     
-    // Nuclear option - override speechSynthesis
-    (window as any).speechSynthesis = {
-      ...window.speechSynthesis,
-      speak: () => console.log('Speech blocked by emergency stop'),
-      cancel: () => {},
-      pause: () => {},
-      resume: () => {},
-      getVoices: () => [],
-      pending: false,
-      speaking: false,
-      paused: false,
-    };
+    // Note: speechSynthesis is read-only, so we rely on aggressive cancellation instead
     
     // Show confirmation
     const notification = document.createElement('div');

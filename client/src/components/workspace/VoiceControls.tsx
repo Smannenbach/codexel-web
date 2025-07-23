@@ -84,16 +84,7 @@ export default function VoiceControls({
       }
     }, 100);
     
-    // Nuclear option - disable all audio globally
-    try {
-      (window as any).speechSynthesis = {
-        ...window.speechSynthesis,
-        speak: () => {},
-        cancel: () => {},
-      };
-    } catch (e) {
-      console.log('Failed to override speechSynthesis', e);
-    }
+    // Note: speechSynthesis is read-only, so we rely on aggressive cancellation instead
 
     toast({
       title: "EMERGENCY STOP ACTIVATED",
@@ -169,15 +160,12 @@ export default function VoiceControls({
                 )}
               </div>
               
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={emergencyMute}
-                className="font-bold bg-red-600 hover:bg-red-700 text-white border-2 border-red-500"
-              >
-                <VolumeX className="w-4 h-4 mr-1" />
-                {isEmergencyMute ? "STOPPED" : "STOP ALL"}
-              </Button>
+              <Badge className={cn(
+                "text-xs transition-all",
+                isEmergencyMute ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-muted text-muted-foreground"
+              )}>
+                {isEmergencyMute ? "STOPPED" : "ACTIVE"}
+              </Badge>
             </div>
 
             {/* Main Controls */}
