@@ -11,8 +11,8 @@ export default function Demo() {
     stack.industries && (stack.industries.includes('legal') || stack.industries.includes('all'))
   );
 
-  const handleComplete = (template: any, stacks: string[], config: any) => {
-    console.log('Demo completed:', { template, stacks, config });
+  const handleComplete = () => {
+    console.log('Demo completed');
   };
 
   return (
