@@ -115,21 +115,9 @@ Let me tell you about something that will save you MONTHS of development time an
       timestamp: new Date(),
     };
     setMessages([initialMessage]);
-    speakMessage(initialMessage.content);
+    // Don't automatically speak the initial message
 
-    // Follow up with value proposition
-    setTimeout(() => {
-      addAgentMessage(
-        "Here's the thing - you could spend 6-12 months building all the marketing automation yourself, OR you could have it all working TODAY with our AI-powered Vibe Packs. Time is the one thing you can't get back, right?"
-      );
-    }, 8000);
-
-    setTimeout(() => {
-      addAgentMessage(
-        "Let me show you what successful law firms are using to generate 50+ leads per month automatically..."
-      );
-      showStackRecommendations();
-    }, 16000);
+    // Remove automatic messages - user controls the conversation
   }, []);
 
   const speakMessage = async (text: string) => {
@@ -229,7 +217,7 @@ Let me tell you about something that will save you MONTHS of development time an
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, newMessage]);
-    speakMessage(content);
+    // Only speak if user explicitly enables voice or clicks a speak button
   };
 
   const showStackRecommendations = () => {
@@ -251,13 +239,18 @@ Let me tell you about something that will save you MONTHS of development time an
       }
     ];
 
+    // Show recommendations only when user requests them
     recommendations.forEach((rec, index) => {
-      setTimeout(() => {
-        const stack = availableStacks.find(s => s.id === rec.stack);
-        if (stack) {
-          addAgentMessage(`${stack.icon} ${stack.name}: ${rec.pitch}`);
-        }
-      }, index * 6000);
+      const stack = availableStacks.find(s => s.id === rec.stack);
+      if (stack) {
+        const newMessage: AgentMessage = {
+          id: `rec-${index}`,
+          role: 'agent',
+          content: `${stack.icon} ${stack.name}: ${rec.pitch}`,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, newMessage]);
+      }
     });
   };
 
@@ -273,32 +266,42 @@ Let me tell you about something that will save you MONTHS of development time an
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // AI responds intelligently based on user input with objection handling
-    setTimeout(() => {
-      if (inputValue.toLowerCase().includes('price') || inputValue.toLowerCase().includes('cost')) {
-        addAgentMessage(
-          "I get it - budget concerns are real! But here's what I tell every successful law firm owner: What's the cost of NOT having leads? Missing just ONE case could cost you $50,000+. Our entire marketing stack costs less than what you charge for a single case consultation!"
-        );
-        setTimeout(() => {
-          addAgentMessage("Plus, we have ROI guarantee - if you don't see measurable results in 90 days, we refund everything. How many marketing companies offer that?");
-        }, 5000);
-      } else if (inputValue.toLowerCase().includes('time') || inputValue.toLowerCase().includes('busy')) {
-        addAgentMessage(
-          "That's exactly WHY you need this! You're too busy to be manually posting on social media, writing blogs, and following up with leads. Time is the one thing you can't get back - every hour you spend on marketing tasks is an hour not practicing law. Let AI handle the marketing so you can focus on what you do best!"
-        );
-        setTimeout(() => {
-          addAgentMessage("Our clients typically save 20+ hours per week on marketing tasks. That's 20 more hours for billable work or family time. What's that worth to you?");
-        }, 4000);
-      } else if (inputValue.toLowerCase().includes('think about it') || inputValue.toLowerCase().includes('later')) {
-        addAgentMessage(
-          "I totally understand wanting to think it over! But here's what I've seen - law firms that wait usually come back in 3-6 months saying they wish they'd started sooner. Your competitors are already using AI marketing. Every day of delay is potential clients going to them instead of you. What specific concerns can I address right now?"
-        );
-      } else {
-        addAgentMessage(
-          "That's a great point! Let me address that specifically for your law firm. The beauty of our system is it adapts to YOUR practice area and client base automatically. No generic templates - everything is customized by AI to match your firm's voice and values."
-        );
-      }
-    }, 1500);
+    // AI responds only when user sends a message - no automatic responses
+    if (inputValue.toLowerCase().includes('price') || inputValue.toLowerCase().includes('cost')) {
+      const responseMessage: AgentMessage = {
+        id: Date.now().toString() + '-response',
+        role: 'agent',
+        content: "I get it - budget concerns are real! But here's what I tell every successful law firm owner: What's the cost of NOT having leads? Missing just ONE case could cost you $50,000+. Our entire marketing stack costs less than what you charge for a single case consultation!",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, responseMessage]);
+    } else if (inputValue.toLowerCase().includes('time') || inputValue.toLowerCase().includes('busy')) {
+      const responseMessage: AgentMessage = {
+        id: Date.now().toString() + '-response',
+        role: 'agent',
+        content: "That's exactly WHY you need this! You're too busy to be manually posting on social media, writing blogs, and following up with leads. Time is the one thing you can't get back - every hour you spend on marketing tasks is an hour not practicing law. Let AI handle the marketing so you can focus on what you do best!",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, responseMessage]);
+    } else if (inputValue.toLowerCase().includes('think about it') || inputValue.toLowerCase().includes('later')) {
+      const responseMessage: AgentMessage = {
+        id: Date.now().toString() + '-response',
+        role: 'agent',
+        content: "I totally understand wanting to think it over! But here's what I've seen - law firms that wait usually come back in 3-6 months saying they wish they'd started sooner. Your competitors are already using AI marketing. Every day of delay is potential clients going to them instead of you. What specific concerns can I address right now?",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, responseMessage]);
+    } else if (inputValue.toLowerCase().includes('show me') || inputValue.toLowerCase().includes('recommendations')) {
+      showStackRecommendations();
+    } else {
+      const responseMessage: AgentMessage = {
+        id: Date.now().toString() + '-response',
+        role: 'agent',
+        content: "Thanks for your message! I'm here to help you build amazing applications with AI. What would you like to know about our development platform?",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, responseMessage]);
+    }
   };
 
   const handleStackToggle = (stackId: string) => {
@@ -391,18 +394,7 @@ Your AI-powered business is going to be unstoppable! 🚀`
         // Stop all tracks
         stream.getTracks().forEach(track => track.stop());
 
-        // AI responds with excitement
-        setTimeout(() => {
-          addAgentMessage(
-            `🎤 AMAZING! I've captured your voice! This is groundbreaking - I can now speak with YOUR actual voice while looking like you!
-
-This creates the ultimate personalized AI experience. When your clients interact with me, they're seeing your face and hearing your voice. This builds unprecedented trust and connection!
-
-You've just created something that doesn't exist anywhere else - a completely personalized AI clone that represents YOU. This is the future of customer engagement!
-
-${avatarImage ? 'With both your photo and voice, you now have the most advanced personalized AI assistant possible!' : 'Upload your photo next to complete the full personalization!'}`
-          );
-        }, 500);
+        // Voice recording complete - no automatic response
       });
 
       mediaRecorderRef.current = mediaRecorder;
