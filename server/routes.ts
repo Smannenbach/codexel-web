@@ -27,10 +27,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register AI chat routes
   app.use('/api/ai', aiRoutes);
   
-  // Chat endpoint
+  // Chat endpoint with intelligent AI responses
   app.post("/api/chat", async (req, res) => {
     try {
-      const { content, projectId, model } = req.body;
+      const { content, projectId, model = 'gpt-4-turbo' } = req.body;
       
       console.log("Chat request received:", { content, projectId, model });
       
@@ -104,9 +104,34 @@ Based on your request, I'll design a modern, responsive website with the followi
 
 What specific type of website are you looking to create? (e.g., business, portfolio, e-commerce) This will help me tailor the design and functionality to your needs.`;
       } else {
-        // Use agent orchestrator for complex requests
-        const orchestrator = new AgentOrchestrator();
-        aiResponse = await orchestrator.processMessage(actualProjectId, content);
+        // Call AI API with selected model
+        try {
+          const aiApiResponse = await fetch(`http://localhost:${port}/api/ai/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: content,
+              model: model,
+              context: {
+                projectType: 'AI Development Platform',
+                industry: 'Technology'
+              }
+            })
+          });
+          
+          if (aiApiResponse.ok) {
+            const data = await aiApiResponse.json();
+            aiResponse = data.response;
+          } else {
+            // Fallback to orchestrator for complex requests
+            const orchestrator = new AgentOrchestrator();
+            aiResponse = await orchestrator.processMessage(actualProjectId, content);
+          }
+        } catch (error) {
+          console.error('AI API error:', error);
+          // Fallback response
+          aiResponse = `I understand you want to build something amazing. Let me help you with that. Could you provide more details about your specific requirements?`;
+        }
       }
 
       // Create AI response message
@@ -131,7 +156,7 @@ What specific type of website are you looking to create? (e.g., business, portfo
   app.post("/api/projects", async (req, res) => {
     try {
       const project = await storage.createProject({
-        userId: "1",
+        userId: 1,
         name: req.body.name || "New Project",
         description: req.body.description || "",
         status: 'planning',
@@ -215,50 +240,7 @@ What specific type of website are you looking to create? (e.g., business, portfo
     }
   });
 
-  // Send message endpoint
-  app.post('/api/projects/:projectId/messages', async (req, res) => {
-    try {
-      const { projectId } = req.params;
-      const { content } = req.body;
-
-      // Get project to determine model
-      const project = await storage.getProject(parseInt(projectId));
-      if (!project) {
-        return res.status(404).json({ error: 'Project not found' });
-      }
-
-      // Process message through orchestrator
-      const orchestrator = new AgentOrchestrator();
-      const aiResponse = await orchestrator.processMessage(parseInt(projectId), content);
-
-      // Save user message
-      const userMessage = await storage.createMessage({
-        projectId: parseInt(projectId),
-        content,
-        role: 'user',
-      });
-
-      // Save AI response
-      const assistantMessage = await storage.createMessage({
-        projectId: parseInt(projectId),
-        content: aiResponse,
-        role: 'assistant',
-        model: project.config?.primaryModel || 'gpt-4',
-      });
-
-      // Update project progress
-      const checklistItems = await storage.getChecklistItemsByProject(parseInt(projectId));
-      const completedItems = checklistItems.filter(item => item.status === 'completed').length;
-      const progress = Math.round((completedItems / checklistItems.length) * 100);
-      
-      await storage.updateProject(parseInt(projectId), { progress });
-
-      res.json(assistantMessage);
-    } catch (error: any) {
-      console.error('Send message error:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
+  // Send message endpoint - replaced by /api/chat below
 
   // Toggle checklist item
   app.patch('/api/checklist/:itemId/toggle', async (req, res) => {

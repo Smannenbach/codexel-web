@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { WorkspaceLayout } from '@/components/workspace/WorkspaceLayout';
+import ThreePanelWorkspace from '@/components/workspace/ThreePanelWorkspace';
 import { ProjectSidebar } from '@/components/workspace/ProjectSidebar';
 import TemplateSetup from '@/components/workspace/TemplateSetup';
 import MarketingDashboard from '@/components/workspace/MarketingDashboard';
@@ -133,39 +133,14 @@ export default function Workspace() {
   }
 
   return (
-    <div className="flex h-screen">
-      <ProjectSidebar
-        projects={projects}
-        selectedProjectId={selectedProjectId}
-        onSelectProject={setSelectedProjectId}
-        onCreateProject={handleCreateProject}
-        isLoading={projectsLoading}
-      />
-      <div className="flex-1 flex flex-col">
-        <WorkspaceHeader 
-          activeView={activeView}
-          onViewChange={setActiveView}
-          projectName={projectData.project.name}
-        />
-        <div className="flex-1 overflow-hidden">
-          {activeView === 'marketing' ? (
-            <MarketingDashboard projectId={selectedProjectId} />
-          ) : (
-            <WorkspaceLayout
-              project={projectData.project}
-              agents={projectData.agents || []}
-              messages={projectData.messages || []}
-              checklist={projectData.checklist || []}
-              onSendMessage={handleSendMessage}
-              onToggleChecklistItem={async (itemId: number) => {
-                // Handle checklist toggle
-                await apiRequest('PATCH', `/api/checklist/${itemId}/toggle`);
-                queryClient.invalidateQueries({ queryKey: ['/api/projects', selectedProjectId] });
-              }}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+    <ThreePanelWorkspace
+      projectId={selectedProjectId}
+      agents={projectData.agents || []}
+      messages={projectData.messages || []}
+      onSendMessage={async (content: string, attachments?: File[]) => {
+        await handleSendMessage(content);
+        // TODO: Handle file attachments when backend supports it
+      }}
+    />
   );
 }
