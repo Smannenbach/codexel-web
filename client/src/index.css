@@ -2,6 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Enhanced Resizable Handle Styles */
+[data-panel-resize-handle-id] {
+  @apply relative flex w-2 items-center justify-center bg-transparent transition-all duration-200;
+}
+
+[data-panel-resize-handle-id]:hover {
+  @apply bg-purple-500/20;
+}
+
+[data-panel-resize-handle-id]:active {
+  @apply bg-purple-500/30;
+}
+
+/* Handle indicator */
+[data-panel-resize-handle-id]::before {
+  @apply content-[''] absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 bg-gray-700 rounded-full transition-all duration-200;
+}
+
+[data-panel-resize-handle-id]:hover::before {
+  @apply w-1.5 bg-purple-500;
+}
+
+[data-panel-resize-handle-id]:active::before {
+  @apply w-2 bg-purple-600;
+}
+
+/* Cursor styles */
+[data-panel-resize-handle-id] {
+  cursor: col-resize;
+}
+
+/* Smooth panel transitions */
+.workspace-container [data-panel] {
+  @apply transition-[flex] duration-200 ease-out;
+}
+
+/* Panel shadow effects on resize */
+[data-panel-resize-handle-id]:active + [data-panel] {
+  @apply shadow-2xl shadow-purple-500/10;
+}
+
+/* Resizable handle dots pattern */
+[data-panel-resize-handle-id][data-panel-resize-handle-enabled="true"]::after {
+  @apply content-[''] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 rounded-full;
+  background-image: radial-gradient(circle, rgba(156, 163, 175, 0.4) 1px, transparent 1px);
+  background-size: 6px 6px;
+  background-position: center;
+  transition: all 0.2s ease;
+}
+
+[data-panel-resize-handle-id]:hover[data-panel-resize-handle-enabled="true"]::after {
+  @apply h-12;
+  background-image: radial-gradient(circle, rgba(168, 85, 247, 0.6) 1px, transparent 1px);
+}
+
+/* Prevent text selection during resize */
+[data-panel-resize-handle-id]:active {
+  user-select: none;
+}
+
+[data-panel-resize-handle-id]:active * {
+  user-select: none;
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(240, 10%, 3.9%);

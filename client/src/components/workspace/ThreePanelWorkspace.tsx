@@ -85,6 +85,8 @@ export default function ThreePanelWorkspace({
   const [isLoading, setIsLoading] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [isResizing, setIsResizing] = useState(false);
+  const [panelSizes, setPanelSizes] = useState<number[]>([20, 45, 35]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -159,8 +161,7 @@ export default function ThreePanelWorkspace({
       className="h-screen bg-gray-950 workspace-container"
       autoSaveId="workspace-layout"
       onLayout={(sizes) => {
-        // Additional handling for layout changes if needed
-        console.log('Layout changed:', sizes);
+        setPanelSizes(sizes);
       }}
     >
       {/* Left Panel - AI Team Dashboard */}
@@ -217,7 +218,10 @@ export default function ThreePanelWorkspace({
         </div>
       </ResizablePanel>
 
-      <ResizableHandle className="w-1 bg-gray-800 hover:bg-purple-600 transition-colors cursor-col-resize" />
+      <ResizableHandle 
+        withHandle 
+        onDragging={(dragging) => setIsResizing(dragging)} 
+      />
 
       {/* Middle Panel - Conversation */}
       <ResizablePanel defaultSize={45} minSize={30}>
@@ -358,7 +362,10 @@ export default function ThreePanelWorkspace({
         </div>
       </ResizablePanel>
 
-      <ResizableHandle className="w-1 bg-gray-800 hover:bg-purple-600 transition-colors cursor-col-resize" />
+      <ResizableHandle 
+        withHandle 
+        onDragging={(dragging) => setIsResizing(dragging)} 
+      />
 
       {/* Right Panel - Preview */}
       <ResizablePanel defaultSize={35} minSize={25}>
@@ -417,6 +424,31 @@ export default function ThreePanelWorkspace({
           </div>
         </div>
       </ResizablePanel>
+      
+      {/* Panel Size Overlay */}
+      {isResizing && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900/95 backdrop-blur-sm rounded-lg p-3 shadow-xl border border-purple-500/50">
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-purple-500" />
+              <span className="text-gray-300">AI Team:</span>
+              <span className="text-white font-mono">{Math.round(panelSizes[0])}%</span>
+            </div>
+            <div className="w-px h-4 bg-gray-600" />
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <span className="text-gray-300">Chat:</span>
+              <span className="text-white font-mono">{Math.round(panelSizes[1])}%</span>
+            </div>
+            <div className="w-px h-4 bg-gray-600" />
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <span className="text-gray-300">Preview:</span>
+              <span className="text-white font-mono">{Math.round(panelSizes[2])}%</span>
+            </div>
+          </div>
+        </div>
+      )}
     </ResizablePanelGroup>
   );
 }
