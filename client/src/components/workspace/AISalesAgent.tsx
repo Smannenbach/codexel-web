@@ -184,20 +184,40 @@ Let me tell you about something that will save you MONTHS of development time an
   };
 
   const stopAllAudio = () => {
-    // Stop speech synthesis immediately
+    console.log('stopAllAudio called from AISalesAgent');
+    
+    // Stop speech synthesis immediately and forcefully
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
+      window.speechSynthesis.pause();
+      // Clear the queue
+      while (window.speechSynthesis.pending || window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      console.log('Speech synthesis forcefully stopped');
+    }
+    
+    // Stop current synthesis reference
+    if (synthRef.current) {
+      synthRef.current.onend = null;
+      synthRef.current = null;
     }
     
     // Stop all audio elements
     const audioElements = document.querySelectorAll('audio');
+    console.log(`Stopping ${audioElements.length} audio elements`);
     audioElements.forEach(audio => {
       audio.pause();
       audio.currentTime = 0;
+      audio.volume = 0;
+      audio.src = '';
     });
 
     setIsSpeaking(false);
     setIsAITalking(false);
+    setVoiceEnabled(false); // Completely disable voice
+    
+    console.log('All audio stopped, voice disabled');
   };
 
   const handleMute = () => {

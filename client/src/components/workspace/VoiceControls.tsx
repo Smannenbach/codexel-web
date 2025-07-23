@@ -37,40 +37,65 @@ export default function VoiceControls({
 
   // Emergency mute function - immediately stops all AI audio
   const emergencyMute = () => {
-    // Stop all speech synthesis
+    console.log('Emergency mute activated!');
+    
+    // Stop all speech synthesis immediately
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
+      console.log('Speech synthesis cancelled');
     }
     
     // Stop all audio elements
     const audioElements = document.querySelectorAll('audio');
-    audioElements.forEach(audio => {
+    console.log(`Found ${audioElements.length} audio elements`);
+    audioElements.forEach((audio, index) => {
       audio.pause();
       audio.currentTime = 0;
+      audio.volume = 0;
+      console.log(`Stopped audio element ${index}`);
     });
 
-    // Stop all media streams
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      devices.forEach(device => {
-        if (device.kind === 'audiooutput') {
-          // Additional audio cleanup
-        }
-      });
+    // Stop all video elements (sometimes used for audio)
+    const videoElements = document.querySelectorAll('video');
+    videoElements.forEach(video => {
+      video.pause();
+      video.currentTime = 0;
+      video.volume = 0;
     });
+
+    // Force stop any Web Audio API contexts
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContext.suspend();
+    } catch (e) {
+      console.log('AudioContext cleanup failed:', e);
+    }
 
     setIsEmergencyMute(true);
     setIsMuted(true);
+    
+    // Call the parent's stop function
     onStopAll();
+    
+    // Force a page refresh as last resort if audio continues
+    const forceStopTimeout = setTimeout(() => {
+      if (window.speechSynthesis.speaking) {
+        console.log('Force reloading page to stop persistent audio');
+        window.location.reload();
+      }
+    }, 2000);
 
     toast({
-      title: "AI Voice Stopped",
-      description: "All AI audio has been immediately stopped",
+      title: "EMERGENCY STOP ACTIVATED",
+      description: "All AI audio has been forcibly terminated",
+      variant: "destructive",
     });
 
-    // Reset emergency state after 3 seconds
+    // Reset emergency state after 5 seconds
     setTimeout(() => {
       setIsEmergencyMute(false);
-    }, 3000);
+      clearTimeout(forceStopTimeout);
+    }, 5000);
   };
 
   const toggleMute = () => {
@@ -137,12 +162,12 @@ export default function VoiceControls({
               
               <Button
                 size="sm"
-                variant={isEmergencyMute ? "default" : "destructive"}
+                variant="destructive"
                 onClick={emergencyMute}
-                className="font-bold"
+                className="font-bold bg-red-600 hover:bg-red-700 text-white border-2 border-red-500"
               >
                 <VolumeX className="w-4 h-4 mr-1" />
-                STOP ALL
+                {isEmergencyMute ? "STOPPED" : "STOP ALL"}
               </Button>
             </div>
 
