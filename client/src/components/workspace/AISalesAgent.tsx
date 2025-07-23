@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Mic, 
   MicOff, 
@@ -18,7 +19,8 @@ import {
   DollarSign,
   User,
   Bot,
-  Check
+  Check,
+  Brain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +30,8 @@ import VoiceCloneSetup from './VoiceCloneSetup';
 import VoiceControls from './VoiceControls';
 import EmergencyStopButton from './EmergencyStopButton';
 import { speakWithVoice } from "@/utils/voiceUtils";
+import { AI_MODELS } from '@/lib/ai-models';
+import { apiRequest } from '@/lib/queryClient';
 
 interface AISalesAgentProps {
   selectedTemplate: any;
@@ -81,6 +85,8 @@ export default function AISalesAgent({
   const [isMuted, setIsMuted] = useState(false);
   const [customVoiceId, setCustomVoiceId] = useState<string>();
   const [showVoiceSetup, setShowVoiceSetup] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<string>('gpt-4-turbo');
+  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -278,7 +284,7 @@ Let me tell you about something that will save you MONTHS of development time an
     });
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: AgentMessage = {
@@ -290,41 +296,52 @@ Let me tell you about something that will save you MONTHS of development time an
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // AI responds only when user sends a message - no automatic responses
-    if (inputValue.toLowerCase().includes('price') || inputValue.toLowerCase().includes('cost')) {
+    // Show typing indicator
+    setIsTyping(true);
+    
+    try {
+      // Call AI API with context
+      const response = await apiRequest('POST', '/api/ai/chat', {
+        message: inputValue,
+        model: selectedModel,
+        context: {
+          projectType: selectedTemplate?.name,
+          selectedStacks: selectedStacks,
+          industry: selectedTemplate?.category
+        }
+      });
+
+      const aiResponse = await response.json();
+      
       const responseMessage: AgentMessage = {
         id: Date.now().toString() + '-response',
         role: 'agent',
-        content: "I get it - budget concerns are real! But here's what I tell every successful law firm owner: What's the cost of NOT having leads? Missing just ONE case could cost you $50,000+. Our entire marketing stack costs less than what you charge for a single case consultation!",
+        content: aiResponse.response,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, responseMessage]);
-    } else if (inputValue.toLowerCase().includes('time') || inputValue.toLowerCase().includes('busy')) {
-      const responseMessage: AgentMessage = {
-        id: Date.now().toString() + '-response',
-        role: 'agent',
-        content: "That's exactly WHY you need this! You're too busy to be manually posting on social media, writing blogs, and following up with leads. Time is the one thing you can't get back - every hour you spend on marketing tasks is an hour not practicing law. Let AI handle the marketing so you can focus on what you do best!",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, responseMessage]);
-    } else if (inputValue.toLowerCase().includes('think about it') || inputValue.toLowerCase().includes('later')) {
-      const responseMessage: AgentMessage = {
-        id: Date.now().toString() + '-response',
-        role: 'agent',
-        content: "I totally understand wanting to think it over! But here's what I've seen - law firms that wait usually come back in 3-6 months saying they wish they'd started sooner. Your competitors are already using AI marketing. Every day of delay is potential clients going to them instead of you. What specific concerns can I address right now?",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, responseMessage]);
-    } else if (inputValue.toLowerCase().includes('show me') || inputValue.toLowerCase().includes('recommendations')) {
-      showStackRecommendations();
-    } else {
-      const responseMessage: AgentMessage = {
-        id: Date.now().toString() + '-response',
-        role: 'agent',
-        content: "Thanks for your message! I'm here to help you build amazing applications with AI. What would you like to know about our development platform?",
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, responseMessage]);
+      
+      // Speak the response if voice is enabled
+      if (voiceEnabled && !isMuted) {
+        speakText(aiResponse.response);
+      }
+    } catch (error) {
+      console.error('AI chat error:', error);
+      
+      // Fallback to hardcoded responses if API fails
+      if (inputValue.toLowerCase().includes('show me') || inputValue.toLowerCase().includes('recommendations')) {
+        showStackRecommendations();
+      } else {
+        const responseMessage: AgentMessage = {
+          id: Date.now().toString() + '-response',
+          role: 'agent',
+          content: "I'm here to help you build amazing applications with AI. Could you tell me more about your specific needs?",
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, responseMessage]);
+      }
+    } finally {
+      setIsTyping(false);
     }
   };
 
