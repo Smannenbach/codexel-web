@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Brain, Code, Palette, Users, Rocket, Star, TrendingUp, Globe, Shield } from 'lucide-react';
+import { Zap, Brain, Code, Palette, Users, Rocket, Star, TrendingUp, Globe, Shield, DollarSign } from 'lucide-react';
 import { useLocation } from 'wouter';
 import Navigation from '@/components/ui/navigation';
 import CookieBanner from '@/components/ui/cookie-banner';
@@ -110,12 +110,12 @@ export default function Home() {
               Build production apps faster than ChatGPT Canvas, Cursor, or Replit.
             </p>
             
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-4 justify-center flex-wrap">
               <Button 
                 size="lg" 
                 onClick={handleCreateProject}
                 disabled={isCreatingProject}
-                className="min-w-[200px]"
+                className="min-w-[200px] bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
               >
                 {isCreatingProject ? (
                   <>
@@ -128,6 +128,16 @@ export default function Home() {
                     Start Building Now
                   </>
                 )}
+              </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => navigate('/pricing')}
+                className="min-w-[200px]"
+              >
+                <DollarSign className="w-4 h-4 mr-2" />
+                View Pricing
               </Button>
               
               <Button 

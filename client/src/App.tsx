@@ -13,6 +13,9 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Disclosures from "@/pages/disclosures";
 import LayoutMarketplace from "@/pages/layout-marketplace";
+import Pricing from "@/pages/Pricing";
+import Checkout from "@/pages/Checkout";
+import PaymentSuccess from "@/pages/PaymentSuccess";
 
 function Router() {
   return (
@@ -22,6 +25,9 @@ function Router() {
       <Route path="/templates" component={Templates} />
       <Route path="/demo" component={Demo} />
       <Route path="/marketplace" component={LayoutMarketplace} />
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/disclosures" component={Disclosures} />

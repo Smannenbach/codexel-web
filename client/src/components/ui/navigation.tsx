@@ -17,6 +17,7 @@ export default function Navigation() {
 
   const navItems = [
     { href: '/templates', label: 'Templates' },
+    { href: '/pricing', label: 'Pricing' },
     { href: '/demo', label: 'Demo' },
     { href: '/workspace', label: 'Workspace' },
   ];

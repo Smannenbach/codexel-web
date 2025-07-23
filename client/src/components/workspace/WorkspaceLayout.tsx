@@ -27,7 +27,7 @@ interface WorkspaceLayoutProps {
   agents: Agent[];
   messages: Message[];
   checklist: ChecklistItem[];
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string) => Promise<void>;
   onToggleChecklistItem?: (itemId: number) => void;
 }
 
@@ -185,7 +185,7 @@ export function WorkspaceLayout({
             <DeployPanel
               projectId={project.id}
               projectName={project.name}
-              isReady={project.progress && project.progress >= 80}
+              isReady={!!project.progress && project.progress >= 80}
             />
           </TabsContent>
         </Tabs>

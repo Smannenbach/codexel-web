@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { registerVoiceRoutes } from './routes/voice';
 import aiRoutes from './routes/ai';
+import { createSubscriptionRoutes } from './routes/subscriptions';
 import multer from "multer";
 import { storage } from "./storage";
 import { voiceCloneService } from "./services/voiceCloning";
@@ -26,6 +27,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register AI chat routes
   app.use('/api/ai', aiRoutes);
+  
+  // Register subscription routes
+  app.use('/api/subscriptions', createSubscriptionRoutes());
   
   // Chat endpoint with intelligent AI responses
   app.post("/api/chat", async (req, res) => {
