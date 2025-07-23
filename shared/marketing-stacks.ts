@@ -7,6 +7,7 @@ export interface MarketingStack {
   features: string[];
   aiCapabilities: AICapability[];
   category: 'essential' | 'growth' | 'enterprise';
+  industries: string[];
 }
 
 export interface AICapability {
@@ -25,6 +26,7 @@ export const marketingStacks: MarketingStack[] = [
     icon: '✍️',
     price: 49,
     category: 'essential',
+    industries: ['legal', 'healthcare', 'finance', 'all'],
     features: [
       'Auto-generate 4 blog posts per week',
       'SEO keyword optimization',
@@ -61,6 +63,7 @@ export const marketingStacks: MarketingStack[] = [
     icon: '📱',
     price: 79,
     category: 'essential',
+    industries: ['legal', 'healthcare', 'finance', 'retail', 'all'],
     features: [
       'Auto-post to Facebook, Instagram, LinkedIn, Twitter',
       'AI-generated graphics and videos',

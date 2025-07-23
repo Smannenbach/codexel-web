@@ -11,15 +11,17 @@ import {
 import { cn } from '@/lib/utils';
 
 interface WorkspaceHeaderProps {
-  activeView: 'chat' | 'marketing';
-  onViewChange: (view: 'chat' | 'marketing') => void;
+  activeView: 'chat' | 'vibe-stack';
+  onViewChange: (view: 'chat' | 'vibe-stack') => void;
   projectName?: string;
+  onAddVibeStack?: () => void;
 }
 
 export default function WorkspaceHeader({ 
   activeView, 
   onViewChange,
-  projectName 
+  projectName,
+  onAddVibeStack 
 }: WorkspaceHeaderProps) {
   return (
     <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -8,7 +8,7 @@ export default function Demo() {
   
   // Get relevant marketing stacks for legal industry
   const relevantStacks = marketingStacks.filter(stack => 
-    stack.industries.includes('legal') || stack.industries.includes('all')
+    stack.industries && (stack.industries.includes('legal') || stack.industries.includes('all'))
   );
 
   const handleComplete = (template: any, stacks: string[], config: any) => {
