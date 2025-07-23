@@ -455,7 +455,13 @@ Your AI-powered business is going to be unstoppable! 🚀`
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 relative overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.03"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10" />
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }} />
+      </div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
       
@@ -492,24 +498,24 @@ Your AI-powered business is going to be unstoppable! 🚀`
             </div>
             <div className="h-[calc(100%-88px)]">
               <Avatar3D
-              isSpeaking={isSpeaking}
-              isMuted={!voiceEnabled}
-              onToggleMute={() => {
-                setVoiceEnabled(!voiceEnabled);
-                if (voiceEnabled && synthRef.current) {
-                  speechSynthesis.cancel();
-                }
-              }}
-              message={messages[messages.length - 1]?.content || ''}
-              onImageUpload={handleAvatarUpload}
-              avatarUrl={avatarImage}
-              onStartRecording={startVoiceRecording}
-              onStopRecording={stopVoiceRecording}
-              isRecording={isRecording}
-              hasVoiceRecording={!!voiceRecording}
-            />
-          </CardContent>
-        </Card>
+                isSpeaking={isSpeaking}
+                isMuted={!voiceEnabled}
+                onToggleMute={() => {
+                  setVoiceEnabled(!voiceEnabled);
+                  if (voiceEnabled && synthRef.current) {
+                    speechSynthesis.cancel();
+                  }
+                }}
+                message={messages[messages.length - 1]?.content || ''}
+                onImageUpload={handleAvatarUpload}
+                avatarUrl={avatarImage}
+                onStartRecording={startVoiceRecording}
+                onStopRecording={stopVoiceRecording}
+                isRecording={isRecording}
+                hasVoiceRecording={!!voiceRecording}
+              />
+            </div>
+          </div>
 
         {/* Voice Setup Modal */}
         {showVoiceSetup && (
@@ -537,17 +543,17 @@ Your AI-powered business is going to be unstoppable! 🚀`
           </Card>
         )}
 
-        {/* Chat Interface */}
-        <Card className="h-[600px] flex flex-col">
-          <CardHeader className="border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">{currentAgent.avatar}</div>
-                <div>
-                  <CardTitle className="text-lg">{currentAgent.name}</CardTitle>
-                  <CardDescription>{currentAgent.role} • Online</CardDescription>
+          {/* Chat Interface - Modern Glassmorphism */}
+          <div className="h-[700px] backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl">{currentAgent.avatar}</div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{currentAgent.name}</h3>
+                    <p className="text-sm text-gray-400">{currentAgent.role} • Online</p>
+                  </div>
                 </div>
-              </div>
               <div className="flex items-center gap-2">
                 <Button
                   size="icon"
@@ -561,11 +567,13 @@ Your AI-powered business is going to be unstoppable! 🚀`
                 >
                   {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 </Button>
+                <Badge className="bg-white/10 text-gray-300 border-white/20 text-xs">
+                  {messages.length} messages
+                </Badge>
               </div>
             </div>
-          </CardHeader>
           
-          <ScrollArea ref={scrollRef} className="flex-1 p-4">
+            <ScrollArea ref={scrollRef} className="flex-1 p-4">
             <div className="space-y-4">
               <AnimatePresence>
                 {messages.map((message) => (
@@ -613,110 +621,126 @@ Your AI-powered business is going to be unstoppable! 🚀`
             </div>
           </ScrollArea>
           
-          <div className="p-4 border-t">
-            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask about pricing, features, or success stories..."
-                className="flex-1"
-              />
-              <Button type="submit" size="icon">
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
+            <div className="p-4 border-t border-white/10">
+              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Ask about pricing, features, or success stories..."
+                  className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                />
+                <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
           </div>
-        </Card>
 
         {/* Stack Selection and Value Proposition */}
         <div className="space-y-6">
-          {/* Value Metrics */}
+          {/* Value Metrics - Modern Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="text-2xl font-bold">${calculateSavings().toLocaleString()}</span>
-                </div>
-                <p className="text-sm text-muted-foreground">Monthly Savings</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 text-blue-600">
-                  <Clock className="w-5 h-5" />
-                  <span className="text-2xl font-bold">480 hrs</span>
-                </div>
-                <p className="text-sm text-muted-foreground">Development Time Saved</p>
-              </CardContent>
-            </Card>
+            <div className="backdrop-blur-xl bg-emerald-500/10 rounded-xl border border-emerald-500/20 p-4">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <TrendingUp className="w-5 h-5" />
+                <span className="text-2xl font-bold">${calculateSavings().toLocaleString()}</span>
+              </div>
+              <p className="text-sm text-gray-400 mt-1">Monthly Savings</p>
+            </div>
+            <div className="backdrop-blur-xl bg-blue-500/10 rounded-xl border border-blue-500/20 p-4">
+              <div className="flex items-center gap-2 text-blue-400">
+                <Clock className="w-5 h-5" />
+                <span className="text-2xl font-bold">480 hrs</span>
+              </div>
+              <p className="text-sm text-gray-400 mt-1">Development Time Saved</p>
+            </div>
           </div>
 
-          {/* Stack Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Your AI Marketing Team</CardTitle>
-              <CardDescription>
+          {/* Stack Selection - Modern Glassmorphism */}
+          <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <div className="p-6 border-b border-white/10">
+              <h3 className="text-xl font-semibold text-white">Your AI Marketing Team</h3>
+              <p className="text-sm text-gray-400 mt-1">
                 Select the AI agents that will work 24/7 for your law firm
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[300px]">
+              </p>
+            </div>
+            <div className="p-6">
+              <ScrollArea className="h-[320px] pr-4">
                 <div className="space-y-3">
                   {availableStacks.map((stack) => (
                     <motion.div
                       key={stack.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
-                      <Card 
+                      <div 
                         className={cn(
-                          "cursor-pointer transition-all",
-                          selectedStacks.includes(stack.id) && "ring-2 ring-primary"
+                          "relative backdrop-blur-xl bg-white/5 rounded-xl border cursor-pointer transition-all duration-300 hover:bg-white/10",
+                          selectedStacks.includes(stack.id) 
+                            ? "border-primary bg-primary/10" 
+                            : "border-white/10"
                         )}
                         onClick={() => handleStackToggle(stack.id)}
                       >
-                        <CardContent className="p-4">
+                        <div className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-2xl">{stack.icon}</span>
-                                <h4 className="font-semibold">{stack.name}</h4>
+                              <div className="flex items-center gap-3">
+                                <span className="text-2xl filter drop-shadow-lg">{stack.icon}</span>
+                                <h4 className="font-semibold text-white">{stack.name}</h4>
 
                               </div>
-                              <p className="text-sm text-muted-foreground mt-1">
+                              <p className="text-sm text-gray-400 mt-1">
                                 {stack.description}
                               </p>
+                              <div className="flex flex-wrap gap-1 mt-3">
+                                {stack.features.map((feature) => (
+                                  <Badge key={feature} className="text-xs bg-white/10 text-gray-300 border-white/20">
+                                    {feature}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-xl font-bold">${stack.price}</div>
-                              <div className="text-xs text-muted-foreground">/month</div>
+                              <p className="text-sm text-gray-500 line-through">
+                                ${stack.originalPrice}/mo
+                              </p>
+                              <p className="text-lg font-bold text-emerald-400">
+                                ${stack.bundlePrice}/mo
+                              </p>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                          {selectedStacks.includes(stack.id) && (
+                            <div className="absolute top-2 right-2">
+                              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
               </ScrollArea>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Action Buttons */}
-          <Card>
-            <CardContent className="p-6">
+          {/* Action Buttons - Modern Glassmorphism */}
+          <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <div className="p-6">
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg">Total Investment:</span>
+                <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                  <span className="text-lg text-gray-300">Total Investment:</span>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-primary">${totalPrice}</div>
-                    <div className="text-sm text-muted-foreground">per month</div>
+                    <div className="text-3xl font-bold text-white">${totalPrice}</div>
+                    <div className="text-sm text-gray-400">per month</div>
                   </div>
                 </div>
                 
                 <Button 
                   size="lg" 
-                  className="w-full"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                   onClick={() => {
                     onStackSelection(selectedStacks);
                     onComplete();
@@ -729,7 +753,7 @@ Your AI-powered business is going to be unstoppable! 🚀`
                 
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full border-white/10 text-gray-300 hover:bg-white/5"
                   onClick={() => {
                     addAgentMessage(
                       "Smart thinking! Let me send you our ROI calculator. Law firms typically see 300-500% ROI in the first 90 days. What's your email?"
@@ -739,8 +763,8 @@ Your AI-powered business is going to be unstoppable! 🚀`
                   Show Me The ROI Calculator
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
