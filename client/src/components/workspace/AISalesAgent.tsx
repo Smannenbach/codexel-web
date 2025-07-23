@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { MarketingStack } from '@shared/marketing-stacks';
 import Avatar3D from './Avatar3D';
 import VoiceCloneSetup from './VoiceCloneSetup';
+import VoiceControls from './VoiceControls';
 
 interface AISalesAgentProps {
   selectedTemplate: any;
@@ -73,6 +74,8 @@ export default function AISalesAgent({
   const [avatarImage, setAvatarImage] = useState<string>();
   const [voiceRecording, setVoiceRecording] = useState<string>();
   const [isRecording, setIsRecording] = useState(false);
+  const [isAITalking, setIsAITalking] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [customVoiceId, setCustomVoiceId] = useState<string>();
   const [showVoiceSetup, setShowVoiceSetup] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -130,9 +133,10 @@ Let me tell you about something that will save you MONTHS of development time an
   }, []);
 
   const speakMessage = async (text: string) => {
-    if (!voiceEnabled) return;
+    if (!voiceEnabled || isMuted) return;
 
     setIsSpeaking(true);
+    setIsAITalking(true);
 
     // Use custom voice clone if available
     if (customVoiceId) {
@@ -155,6 +159,7 @@ Let me tell you about something that will save you MONTHS of development time an
           
           audio.onended = () => {
             setIsSpeaking(false);
+            setIsAITalking(false);
             URL.revokeObjectURL(audioUrl);
           };
           
@@ -177,11 +182,43 @@ Let me tell you about something that will save you MONTHS of development time an
     const preferredVoice = voices.find(v => v.name.includes('Aria') || v.name.includes('Female'));
     if (preferredVoice) utterance.voice = preferredVoice;
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsAITalking(true);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsAITalking(false);
+    };
 
     speechSynthesis.speak(utterance);
     synthRef.current = utterance;
+  };
+
+  const stopAllAudio = () => {
+    // Stop speech synthesis immediately
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
+    // Stop all audio elements
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+
+    setIsSpeaking(false);
+    setIsAITalking(false);
+  };
+
+  const handleMute = () => {
+    setIsMuted(true);
+    stopAllAudio();
+  };
+
+  const handleUnmute = () => {
+    setIsMuted(false);
   };
 
   const addAgentMessage = (content: string) => {
@@ -401,7 +438,14 @@ ${avatarImage ? 'With both your photo and voice, you now have the most advanced 
   }, [messages]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-6 relative">
+      {/* Voice Controls - Emergency Mute */}
+      <VoiceControls 
+        isAITalking={isAITalking}
+        onMute={handleMute}
+        onUnmute={handleUnmute}
+        onStopAll={stopAllAudio}
+      />
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 3D Avatar Interface */}
         <Card className="h-[600px]">
