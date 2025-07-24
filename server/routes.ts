@@ -13,6 +13,7 @@ import { aiService } from "./services/ai-service";
 import { AgentOrchestrator } from "./services/ai-orchestrator";
 import type { InsertMessage, InsertProject, InsertAgent } from "@shared/schema";
 import { aiContentGenerator } from "./services/ai-content-generator";
+import { performanceOptimizer } from "./services/performance-optimizer";
 import { blogPosts, marketingCampaigns } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -28,6 +29,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply rate limiting middleware globally
   app.use(rateLimitLogger);
   app.use('/api', rateLimiters.general);
+  
+  // Apply performance monitoring middleware
+  app.use(performanceOptimizer.middleware());
   
   // Register voice cloning routes with upload rate limiting
   app.use('/api/voice', rateLimiters.upload);
@@ -672,6 +676,61 @@ What specific type of website are you looking to create? (e.g., business, portfo
   // Register snapshot routes
   const { registerSnapshotRoutes } = await import('./routes/snapshots');
   registerSnapshotRoutes(app);
+
+  // Performance Monitoring API endpoints
+  app.get('/api/performance/metrics', (req, res) => {
+    try {
+      const metrics = performanceOptimizer.getMetrics();
+      res.json({ metrics });
+    } catch (error) {
+      console.error('Performance metrics error:', error);
+      res.status(500).json({ error: 'Failed to get performance metrics' });
+    }
+  });
+
+  app.get('/api/performance/summary', (req, res) => {
+    try {
+      const summary = performanceOptimizer.getSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error('Performance summary error:', error);
+      res.status(500).json({ error: 'Failed to get performance summary' });
+    }
+  });
+
+  app.get('/api/performance/recommendations', (req, res) => {
+    try {
+      const recommendations = performanceOptimizer.getRecommendations();
+      res.json({ recommendations });
+    } catch (error) {
+      console.error('Performance recommendations error:', error);
+      res.status(500).json({ error: 'Failed to get performance recommendations' });
+    }
+  });
+
+  app.get('/api/performance/health', (req, res) => {
+    try {
+      const health = performanceOptimizer.getSystemHealth();
+      res.json(health);
+    } catch (error) {
+      console.error('System health error:', error);
+      res.status(500).json({ error: 'Failed to get system health' });
+    }
+  });
+
+  app.post('/api/performance/optimize', (req, res) => {
+    try {
+      const optimizations = performanceOptimizer.autoOptimize();
+      res.json({ 
+        success: true, 
+        optimizations,
+        message: `Applied ${optimizations.length} optimizations`
+      });
+    } catch (error) {
+      console.error('Auto-optimize error:', error);
+      res.status(500).json({ error: 'Failed to apply optimizations' });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

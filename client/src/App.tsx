@@ -21,11 +21,13 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import TestWorkspace from "@/pages/TestWorkspace";
 import SharedWorkspaceView from "@/components/workspace/SharedWorkspaceView";
 import ProductionDashboard from "@/pages/ProductionDashboard";
+import MarketingLanding from "@/pages/marketing-landing";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={MarketingLanding} />
+      <Route path="/home" component={Home} />
       <Route path="/workspace" component={Workspace} />
       <Route path="/templates" component={Templates} />
       <Route path="/demo" component={Demo} />
