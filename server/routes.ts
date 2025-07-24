@@ -4,6 +4,7 @@ import { registerVoiceRoutes } from './routes/voice';
 import aiRoutes from './routes/ai';
 import { createSubscriptionRoutes } from './routes/subscriptions';
 import errorRoutes from './routes/errors';
+import { registerSnapshotRoutes } from './routes/snapshots';
 import { rateLimiters, rateLimitLogger } from './middleware/rateLimiter';
 import multer from "multer";
 import { storage } from "./storage";

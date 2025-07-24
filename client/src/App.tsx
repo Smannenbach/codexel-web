@@ -18,6 +18,7 @@ import Pricing from "@/pages/Pricing";
 import Checkout from "@/pages/Checkout";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import TestWorkspace from "@/pages/TestWorkspace";
+import SharedWorkspaceView from "@/components/workspace/SharedWorkspaceView";
 
 function Router() {
   return (
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/test" component={TestWorkspace} />
+      <Route path="/shared-workspace/:id" component={SharedWorkspaceView} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/disclosures" component={Disclosures} />

@@ -19,7 +19,10 @@ import {
   Download,
   Upload,
   History,
-  Tag
+  Tag,
+  Share2,
+  Copy,
+  Link
 } from 'lucide-react';
 import type { WorkspaceSnapshot } from '@shared/schema';
 
@@ -118,6 +121,28 @@ export function WorkspaceSnapshots({
     }
   });
 
+  // Share snapshot mutation
+  const shareSnapshotMutation = useMutation({
+    mutationFn: async (snapshotId: number) => {
+      return apiRequest('POST', `/api/snapshots/${snapshotId}/share`);
+    },
+    onSuccess: (data) => {
+      // Copy share link to clipboard
+      navigator.clipboard.writeText(data.shareLink);
+      toast({
+        title: "Snapshot Shared",
+        description: "Share link copied to clipboard!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Share Failed",
+        description: "Failed to create share link",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleCreateSnapshot = () => {
     if (!snapshotName.trim()) {
       toast({
@@ -152,6 +177,10 @@ export function WorkspaceSnapshots({
     if (confirm('Are you sure you want to delete this snapshot? This action cannot be undone.')) {
       deleteSnapshotMutation.mutate(snapshotId);
     }
+  };
+
+  const handleShareSnapshot = (snapshotId: number) => {
+    shareSnapshotMutation.mutate(snapshotId);
   };
 
   const autoSaveSnapshots = snapshots.filter(s => s.isAutoSaved);
@@ -256,8 +285,10 @@ export function WorkspaceSnapshots({
                       snapshot={snapshot}
                       onRestore={() => handleRestoreSnapshot(snapshot.id)}
                       onDelete={() => handleDeleteSnapshot(snapshot.id)}
+                      onShare={() => handleShareSnapshot(snapshot.id)}
                       isRestoring={restoreSnapshotMutation.isPending}
                       isDeleting={deleteSnapshotMutation.isPending}
+                      isSharing={shareSnapshotMutation.isPending}
                     />
                   ))}
                 </div>
@@ -277,8 +308,10 @@ export function WorkspaceSnapshots({
                       snapshot={snapshot}
                       onRestore={() => handleRestoreSnapshot(snapshot.id)}
                       onDelete={() => handleDeleteSnapshot(snapshot.id)}
+                      onShare={() => handleShareSnapshot(snapshot.id)}
                       isRestoring={restoreSnapshotMutation.isPending}
                       isDeleting={deleteSnapshotMutation.isPending}
+                      isSharing={shareSnapshotMutation.isPending}
                     />
                   ))}
                 </div>
@@ -306,16 +339,20 @@ interface SnapshotCardProps {
   snapshot: WorkspaceSnapshot;
   onRestore: () => void;
   onDelete: () => void;
+  onShare: () => void;
   isRestoring: boolean;
   isDeleting: boolean;
+  isSharing: boolean;
 }
 
 function SnapshotCard({ 
   snapshot, 
   onRestore, 
   onDelete, 
+  onShare,
   isRestoring, 
-  isDeleting 
+  isDeleting,
+  isSharing 
 }: SnapshotCardProps) {
   return (
     <Card className="transition-all hover:shadow-md">
@@ -370,6 +407,17 @@ function SnapshotCard({
           >
             <RotateCcw className="h-3 w-3" />
             {isRestoring ? 'Restoring...' : 'Restore'}
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onShare}
+            disabled={isSharing}
+            className="gap-1"
+          >
+            <Share2 className="h-3 w-3" />
+            {isSharing ? 'Sharing...' : 'Share'}
           </Button>
           
           <Button

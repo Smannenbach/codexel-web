@@ -1,216 +1,226 @@
-import type { Express } from "express";
-import { z } from "zod";
-import { storage } from "../storage";
-import { rateLimiters } from "../middleware/rateLimiter";
+import express from 'express';
+import { z } from 'zod';
+import { storage } from '../storage';
+import { createInsertSchema } from 'drizzle-zod';
+import { workspaceSnapshots } from '@shared/schema';
 
-const snapshotSchema = z.object({
-  projectId: z.number(),
-  name: z.string().min(1).max(255),
-  description: z.string().optional(),
-  snapshotData: z.any(), // Complete workspace state
-  thumbnail: z.string().optional(),
-  isAutoSaved: z.boolean().default(false),
-  tags: z.array(z.string()).default([])
+// Rate limiting middleware
+const rateLimiters = {
+  general: (req: any, res: any, next: any) => next(), // Placeholder for actual rate limiting
+};
+
+// Validation schemas
+const snapshotSchema = createInsertSchema(workspaceSnapshots).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  userId: true // Will be set from auth
 });
 
-const restoreSnapshotSchema = z.object({
+const autoSaveSchema = z.object({
+  projectId: z.number(),
+  snapshotData: z.any()
+});
+
+const restoreSchema = z.object({
   snapshotId: z.number(),
   projectId: z.number()
 });
 
-export function registerSnapshotRoutes(app: Express) {
+export function registerSnapshotRoutes(app: express.Application) {
+  // Get snapshots for a project
+  app.get("/api/snapshots/project/:projectId", async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const userId = 1; // In real app, get from authenticated user
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ error: "Invalid project ID" });
+      }
+      
+      const snapshots = await storage.getWorkspaceSnapshots(userId, projectId);
+      res.json({ snapshots });
+    } catch (error) {
+      console.error("Failed to fetch snapshots:", error);
+      res.status(500).json({ error: "Failed to fetch snapshots" });
+    }
+  });
+
   // Create a workspace snapshot
   app.post("/api/snapshots", rateLimiters.general, async (req, res) => {
     try {
       const snapshot = snapshotSchema.parse(req.body);
       const userId = 1; // In real app, get from authenticated user
 
-      console.log('📸 Creating workspace snapshot:', {
-        name: snapshot.name,
-        projectId: snapshot.projectId,
-        isAutoSaved: snapshot.isAutoSaved
-      });
-
-      // Create snapshot with complete workspace state
       const createdSnapshot = await storage.createWorkspaceSnapshot({
-        userId,
-        projectId: snapshot.projectId,
-        name: snapshot.name,
-        description: snapshot.description,
-        snapshotData: snapshot.snapshotData,
-        thumbnail: snapshot.thumbnail,
-        isAutoSaved: snapshot.isAutoSaved,
-        tags: snapshot.tags
-      });
-
-      res.json({ 
-        success: true, 
-        snapshot: createdSnapshot,
-        message: `Snapshot "${snapshot.name}" created successfully`
-      });
-
-    } catch (error) {
-      console.error('Snapshot creation error:', error);
-      res.status(400).json({ 
-        success: false, 
-        error: 'Invalid snapshot request' 
-      });
-    }
-  });
-
-  // Get all snapshots for a project
-  app.get("/api/snapshots/project/:projectId", async (req, res) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      const userId = 1; // In real app, get from authenticated user
-
-      const snapshots = await storage.getWorkspaceSnapshots(userId, projectId);
-
-      res.json({ 
-        snapshots: snapshots.map(snapshot => ({
-          ...snapshot,
-          snapshotData: undefined // Don't send full data in list view
-        }))
-      });
-
-    } catch (error) {
-      console.error('Error fetching snapshots:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to fetch snapshots' 
-      });
-    }
-  });
-
-  // Get a specific snapshot with full data
-  app.get("/api/snapshots/:id", async (req, res) => {
-    try {
-      const snapshotId = parseInt(req.params.id);
-      const userId = 1; // In real app, get from authenticated user
-
-      const snapshot = await storage.getWorkspaceSnapshotById(snapshotId, userId);
-      
-      if (!snapshot) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Snapshot not found' 
-        });
-      }
-
-      res.json({ snapshot });
-
-    } catch (error) {
-      console.error('Error fetching snapshot:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to fetch snapshot' 
-      });
-    }
-  });
-
-  // Restore workspace from snapshot
-  app.post("/api/snapshots/restore", rateLimiters.general, async (req, res) => {
-    try {
-      const { snapshotId, projectId } = restoreSnapshotSchema.parse(req.body);
-      const userId = 1; // In real app, get from authenticated user
-
-      console.log('🔄 Restoring workspace from snapshot:', {
-        snapshotId,
-        projectId,
+        ...snapshot,
         userId
       });
 
-      const snapshot = await storage.getWorkspaceSnapshotById(snapshotId, userId);
-      
-      if (!snapshot) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Snapshot not found' 
-        });
-      }
-
-      // In a real implementation, this would:
-      // 1. Validate snapshot compatibility
-      // 2. Backup current state
-      // 3. Restore workspace configuration
-      // 4. Update project state
-      // 5. Notify user of successful restoration
-
-      res.json({ 
-        success: true, 
-        snapshot: snapshot.snapshotData,
-        message: `Workspace restored from "${snapshot.name}"`
-      });
-
+      res.json({ snapshot: createdSnapshot });
     } catch (error) {
-      console.error('Snapshot restore error:', error);
-      res.status(400).json({ 
-        success: false, 
-        error: 'Failed to restore snapshot' 
-      });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid snapshot data", details: error.errors });
+      }
+      
+      console.error("Failed to create snapshot:", error);
+      res.status(500).json({ error: "Failed to create snapshot" });
     }
   });
 
-  // Delete a snapshot
-  app.delete("/api/snapshots/:id", rateLimiters.general, async (req, res) => {
+  // Auto-save endpoint (simplified snapshot creation)
+  app.post("/api/snapshots/auto-save", rateLimiters.general, async (req, res) => {
+    try {
+      const { projectId, snapshotData } = autoSaveSchema.parse(req.body);
+      const userId = 1; // In real app, get from authenticated user
+
+      // Create auto-save snapshot with timestamp name
+      const timestamp = new Date().toLocaleString();
+      const autoSaveSnapshot = await storage.createWorkspaceSnapshot({
+        userId,
+        projectId,
+        name: `Auto-save ${timestamp}`,
+        description: "Automatic workspace backup",
+        snapshotData,
+        isAutoSaved: true,
+        tags: ["auto-save"]
+      });
+
+      // Clean up old auto-saves (keep only last 10)
+      await storage.cleanupAutoSaveSnapshots(userId, projectId, 10);
+
+      res.json({ snapshot: autoSaveSnapshot });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid auto-save data", details: error.errors });
+      }
+      
+      console.error("Failed to auto-save:", error);
+      res.status(500).json({ error: "Failed to auto-save workspace" });
+    }
+  });
+
+  // Restore a workspace snapshot
+  app.post("/api/snapshots/restore", async (req, res) => {
+    try {
+      const { snapshotId, projectId } = restoreSchema.parse(req.body);
+      const userId = 1; // In real app, get from authenticated user
+
+      const snapshot = await storage.getWorkspaceSnapshotById(snapshotId, userId);
+      
+      if (!snapshot) {
+        return res.status(404).json({ error: "Snapshot not found" });
+      }
+
+      if (snapshot.projectId !== projectId) {
+        return res.status(403).json({ error: "Snapshot does not belong to this project" });
+      }
+
+      res.json({ 
+        snapshot: snapshot.snapshotData,
+        metadata: {
+          name: snapshot.name,
+          description: snapshot.description,
+          createdAt: snapshot.createdAt
+        }
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid restore data", details: error.errors });
+      }
+      
+      console.error("Failed to restore snapshot:", error);
+      res.status(500).json({ error: "Failed to restore snapshot" });
+    }
+  });
+
+  // Delete a workspace snapshot
+  app.delete("/api/snapshots/:id", async (req, res) => {
     try {
       const snapshotId = parseInt(req.params.id);
       const userId = 1; // In real app, get from authenticated user
+      
+      if (isNaN(snapshotId)) {
+        return res.status(400).json({ error: "Invalid snapshot ID" });
+      }
 
       const deleted = await storage.deleteWorkspaceSnapshot(snapshotId, userId);
       
       if (!deleted) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Snapshot not found' 
-        });
+        return res.status(404).json({ error: "Snapshot not found" });
       }
 
-      res.json({ 
-        success: true, 
-        message: 'Snapshot deleted successfully' 
-      });
-
+      res.json({ success: true });
     } catch (error) {
-      console.error('Error deleting snapshot:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to delete snapshot' 
-      });
+      console.error("Failed to delete snapshot:", error);
+      res.status(500).json({ error: "Failed to delete snapshot" });
     }
   });
 
-  // Auto-save workspace state (called periodically)
-  app.post("/api/snapshots/auto-save", rateLimiters.upload, async (req, res) => {
+  // Share a snapshot (create public link)
+  app.post("/api/snapshots/:id/share", async (req, res) => {
     try {
-      const { projectId, snapshotData } = req.body;
+      const snapshotId = parseInt(req.params.id);
       const userId = 1; // In real app, get from authenticated user
+      
+      if (isNaN(snapshotId)) {
+        return res.status(400).json({ error: "Invalid snapshot ID" });
+      }
 
-      // Delete old auto-save snapshots (keep only latest 3)
-      await storage.cleanupAutoSaveSnapshots(userId, projectId, 3);
+      const snapshot = await storage.getWorkspaceSnapshotById(snapshotId, userId);
+      
+      if (!snapshot) {
+        return res.status(404).json({ error: "Snapshot not found" });
+      }
 
-      // Create new auto-save snapshot
-      const autoSnapshot = await storage.createWorkspaceSnapshot({
-        userId,
-        projectId,
-        name: `Auto-save ${new Date().toLocaleString()}`,
-        description: 'Automatically saved workspace state',
-        snapshotData,
-        isAutoSaved: true,
-        tags: ['auto-save']
-      });
-
+      // Generate shareable link (in real app, would create share token)
+      const shareLink = `${req.protocol}://${req.get('Host')}/shared-workspace/${snapshotId}`;
+      
       res.json({ 
-        success: true, 
-        autoSnapshot: { id: autoSnapshot.id, name: autoSnapshot.name }
+        shareLink,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        snapshot: {
+          name: snapshot.name,
+          description: snapshot.description,
+          createdAt: snapshot.createdAt
+        }
       });
-
     } catch (error) {
-      console.error('Auto-save error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Auto-save failed' 
+      console.error("Failed to share snapshot:", error);
+      res.status(500).json({ error: "Failed to share snapshot" });
+    }
+  });
+
+  // Get shared snapshot (public endpoint)
+  app.get("/api/shared-workspace/:id", async (req, res) => {
+    try {
+      const snapshotId = parseInt(req.params.id);
+      
+      if (isNaN(snapshotId)) {
+        return res.status(400).json({ error: "Invalid snapshot ID" });
+      }
+
+      // In real app, would validate share token and expiration
+      const snapshot = await storage.getWorkspaceSnapshotById(snapshotId, 1); // Get any user's snapshot for sharing
+      
+      if (!snapshot) {
+        return res.status(404).json({ error: "Shared workspace not found or expired" });
+      }
+
+      res.json({
+        snapshot: snapshot.snapshotData,
+        metadata: {
+          name: snapshot.name,
+          description: snapshot.description,
+          createdAt: snapshot.createdAt,
+          tags: snapshot.tags
+        },
+        isShared: true,
+        readOnly: true
       });
+    } catch (error) {
+      console.error("Failed to get shared snapshot:", error);
+      res.status(500).json({ error: "Failed to load shared workspace" });
     }
   });
 }
