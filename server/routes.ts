@@ -27,6 +27,7 @@ import { enterpriseAnalytics } from "./services/enterprise-analytics";
 import autonomousAgentsRoutes from './routes/autonomous-agents';
 import collaborationRoutes from './routes/collaboration';
 import enterpriseDeploymentRoutes from './routes/enterprise-deployment';
+import { registerPhase10Routes } from './routes/phase10-routes';
 import { blogPosts, marketingCampaigns } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -1361,6 +1362,9 @@ What specific type of website are you looking to create? (e.g., business, portfo
   console.log('   ✅ Enterprise Analytics & Insights');
   console.log('   ✅ Advanced Cost Optimization');
   console.log('   ✅ Team Productivity Tracking');
+
+  // Register Phase 10 advanced features
+  registerPhase10Routes(app);
 
   const httpServer = createServer(app);
   

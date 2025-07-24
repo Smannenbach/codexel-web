@@ -65,6 +65,7 @@ import { AdvancedCodeGeneration } from './AdvancedCodeGeneration';
 import AutonomousAgentPanel from './AutonomousAgentPanel';
 import CollaborationPanel from './CollaborationPanel';
 import EnterpriseDeploymentPanel from './EnterpriseDeploymentPanel';
+import { Phase10Panel } from './Phase10Panel';
 
 interface ThreePanelWorkspaceProps {
   projectId: number;
@@ -130,6 +131,7 @@ export default function ThreePanelWorkspace({
   const [showMobileAppGenerator, setShowMobileAppGenerator] = useState(false);
   const [showEnterpriseAnalytics, setShowEnterpriseAnalytics] = useState(false);
   const [showEnhancedDeployment, setShowEnhancedDeployment] = useState(false);
+  const [showPhase10Panel, setShowPhase10Panel] = useState(false);
   const audioFeedback = useAudioFeedback();
   const [lastPanelFocus, setLastPanelFocus] = useState<{ panel: string; time: number } | null>(null);
   const [snapIndicators, setSnapIndicators] = useState<number[]>([]);
@@ -799,6 +801,18 @@ export default function ThreePanelWorkspace({
                   size="icon"
                   onClick={(e) => {
                     audioFeedback.playButtonClick(e.currentTarget);
+                    setShowPhase10Panel(true);
+                  }}
+                  className="text-gray-400 hover:text-white"
+                  title="Phase 10: AI Orchestration"
+                >
+                  <Brain className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    audioFeedback.playButtonClick(e.currentTarget);
                     setShowEnhancedDeployment(true);
                   }}
                   className="text-gray-400 hover:text-white"
@@ -1341,6 +1355,21 @@ export default function ThreePanelWorkspace({
           </DialogHeader>
           <div className="mt-4">
             <EnhancedDeploymentPanel />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Phase 10: Advanced AI Orchestration Dialog */}
+      <Dialog open={showPhase10Panel} onOpenChange={setShowPhase10Panel}>
+        <DialogContent className="max-w-7xl h-[90vh] bg-gray-900 border-gray-800 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Brain className="w-6 h-6 text-purple-500" />
+              Phase 10: Advanced AI Orchestration & Scalability
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <Phase10Panel />
           </div>
         </DialogContent>
       </Dialog>
