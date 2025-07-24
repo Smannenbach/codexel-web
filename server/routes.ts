@@ -106,6 +106,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     `);
   });
   
+  // Multimodal chat endpoint with file support
+  app.post("/api/chat/multimodal", upload.array('files', 5), async (req, res) => {
+    try {
+      const { content, projectId, model = 'gpt-4-turbo' } = req.body;
+      const files = req.files as Express.Multer.File[];
+      
+      console.log("Multimodal chat request:", { content, projectId, model, fileCount: files?.length || 0 });
+      
+      if (!content || content.trim().length === 0) {
+        return res.status(400).json({ message: "Content is required" });
+      }
+
+      const actualProjectId = projectId || 1;
+      
+      // Process uploaded files
+      let fileContext = '';
+      if (files && files.length > 0) {
+        fileContext = '\n\nAttached files:\n';
+        for (const file of files) {
+          fileContext += `- ${file.originalname} (${file.mimetype}, ${(file.size / 1024).toFixed(1)}KB)\n`;
+          
+          // For text files, include content
+          if (file.mimetype.includes('text') || file.originalname.endsWith('.txt')) {
+            const textContent = file.buffer.toString('utf8').substring(0, 1000);
+            fileContext += `  Content preview: ${textContent}...\n`;
+          }
+        }
+      }
+      
+      // Create user message with file context
+      await storage.createMessage({
+        projectId: actualProjectId,
+        role: 'user',
+        content: content.trim() + fileContext,
+        model: null,
+      });
+
+      // Enhanced AI response based on context
+      const enhancedContent = content + fileContext;
+      
+      // Call AI API with enhanced context
+      const aiApiResponse = await fetch(`http://localhost:5000/api/ai/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: enhancedContent,
+          model: model,
+          context: {
+            projectType: 'AI Development Platform',
+            hasAttachments: files && files.length > 0,
+            attachmentTypes: files?.map(f => f.mimetype) || []
+          }
+        })
+      });
+      
+      let aiResponse = "";
+      if (aiApiResponse.ok) {
+        const data = await aiApiResponse.json();
+        aiResponse = data.response;
+      } else {
+        aiResponse = "I understand you've uploaded files. I can help analyze and work with these attachments to build your application. What would you like me to do with these files?";
+      }
+      
+      // Create AI response message
+      const aiMessage = await storage.createMessage({
+        projectId: actualProjectId,
+        role: 'assistant',
+        content: aiResponse,
+        model: model,
+      });
+
+      res.json({
+        content: aiResponse,
+        messageId: aiMessage.id,
+        model: model
+      });
+    } catch (error) {
+      console.error("Multimodal chat error:", error);
+      res.status(500).json({ 
+        message: "Failed to process multimodal chat request",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
   // Chat endpoint with intelligent AI responses
   app.post("/api/chat", async (req, res) => {
     try {

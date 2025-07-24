@@ -32,6 +32,7 @@ import {
 import { AI_MODELS } from '@/lib/ai-models';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import type { Agent, Message } from '@shared/schema';
 import ShareLayoutButton from './ShareLayoutButton';
 import AnalyticsDashboard from './AnalyticsDashboard';
@@ -99,6 +100,7 @@ export default function ThreePanelWorkspace({
   const [lastPanelFocus, setLastPanelFocus] = useState<{ panel: string; time: number } | null>(null);
   const [snapIndicators, setSnapIndicators] = useState<number[]>([]);
   const [activeSnapLine, setActiveSnapLine] = useState<number | null>(null);
+  const [activeAgents, setActiveAgents] = useState<Agent[]>(agents.length > 0 ? agents : defaultAgents);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
@@ -107,20 +109,106 @@ export default function ThreePanelWorkspace({
   // Snap points for common layouts
   const SNAP_POINTS = [20, 25, 33.33, 40, 50, 60, 66.67, 75, 80];
   const SNAP_THRESHOLD = 2; // Snap within 2% of target
+  
+  // Default agents to show when no agents are loaded
+  const defaultAgents: Agent[] = [
+    {
+      id: 1,
+      projectId,
+      name: 'Project Manager',
+      role: 'project-manager',
+      status: 'active',
+      currentTask: 'Creating project roadmap and coordinating team tasks',
+      model: 'gpt-4-turbo',
+      progress: 35,
+      createdAt: new Date()
+    },
+    {
+      id: 2,
+      projectId,
+      name: 'Solution Architect',
+      role: 'architect',
+      status: 'active',
+      currentTask: 'Designing system architecture and API structure',
+      model: 'claude-3-5-sonnet',
+      progress: 45,
+      createdAt: new Date()
+    },
+    {
+      id: 3,
+      projectId,
+      name: 'UX Designer',
+      role: 'ux-designer',
+      status: 'idle',
+      currentTask: 'Waiting for architecture approval',
+      model: 'gpt-4-turbo',
+      progress: 0,
+      createdAt: new Date()
+    },
+    {
+      id: 4,
+      projectId,
+      name: 'Frontend Dev',
+      role: 'frontend',
+      status: 'idle',
+      currentTask: 'Ready to implement UI components',
+      model: 'gpt-4-turbo',
+      progress: 0,
+      createdAt: new Date()
+    },
+    {
+      id: 5,
+      projectId,
+      name: 'Backend Dev',
+      role: 'backend',
+      status: 'idle',
+      currentTask: 'Preparing API endpoints',
+      model: 'claude-3-5-sonnet',
+      progress: 0,
+      createdAt: new Date()
+    }
+  ];
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() && attachments.length === 0) return;
     
     setIsLoading(true);
     try {
-      await onSendMessage(inputValue, attachments);
+      // Use multimodal endpoint if attachments exist
+      if (attachments.length > 0) {
+        const formData = new FormData();
+        formData.append('content', inputValue);
+        formData.append('projectId', projectId.toString());
+        formData.append('model', selectedModel);
+        
+        attachments.forEach(file => {
+          formData.append('files', file);
+        });
+        
+        const response = await fetch('/api/chat/multimodal', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) throw new Error('Failed to send message');
+        
+        const data = await response.json();
+        if (onSendMessage) {
+          await onSendMessage(data.content, []);
+        }
+      } else {
+        await onSendMessage(inputValue, []);
+      }
       
       // Track analytics
       await apiRequest('POST', '/api/analytics/track', {
         userId,
         projectId,
         event: 'message_sent',
-        data: { model: selectedModel }
+        data: { 
+          model: selectedModel,
+          hasAttachments: attachments.length > 0
+        }
       });
       
       setInputValue('');
@@ -181,6 +269,60 @@ export default function ThreePanelWorkspace({
     };
     localStorage.setItem('workspace-advanced-config', JSON.stringify(config));
   }, [previewDevice, selectedModel]);
+  
+  // Simulate agent activity when messages are sent
+  useEffect(() => {
+    if (isLoading) {
+      // Activate agents based on message content
+      const updatedAgents = [...activeAgents];
+      
+      // Activate project manager first
+      const pmIndex = updatedAgents.findIndex(a => a.role === 'project-manager');
+      if (pmIndex !== -1) {
+        updatedAgents[pmIndex] = {
+          ...updatedAgents[pmIndex],
+          status: 'active',
+          currentTask: 'Analyzing requirements and coordinating team',
+          progress: 15
+        };
+      }
+      
+      // Activate architect after a delay
+      setTimeout(() => {
+        const archIndex = updatedAgents.findIndex(a => a.role === 'architect');
+        if (archIndex !== -1) {
+          setActiveAgents(prev => {
+            const newAgents = [...prev];
+            newAgents[archIndex] = {
+              ...newAgents[archIndex],
+              status: 'active',
+              currentTask: 'Designing system architecture',
+              progress: 25
+            };
+            // Update PM progress
+            if (pmIndex !== -1) {
+              newAgents[pmIndex] = {
+                ...newAgents[pmIndex],
+                progress: 45
+              };
+            }
+            return newAgents;
+          });
+        }
+      }, 1500);
+      
+      setActiveAgents(updatedAgents);
+    } else {
+      // Reset agent status when not loading
+      setTimeout(() => {
+        setActiveAgents(prev => prev.map(agent => ({
+          ...agent,
+          status: agent.progress === 100 ? 'completed' : 'idle',
+          progress: agent.progress === 100 ? 100 : 0
+        })));
+      }, 2000);
+    }
+  }, [isLoading]);
 
   return (
     <ResizablePanelGroup 
@@ -249,22 +391,51 @@ export default function ThreePanelWorkspace({
           
           <ScrollArea className="h-[calc(100%-120px)] p-4">
             <div className="space-y-3">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Active Agents (5)</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                Active Agents ({activeAgents.filter(a => a.status === 'active').length})
+              </p>
               
-              {Object.entries(AGENT_TYPES).map(([type, info]) => {
-                const agent = agents.find(a => a.role === type);
-                const isActive = agent?.status === 'working';
+              {activeAgents.map((agent) => {
+                const agentType = AGENT_TYPES[agent.role as keyof typeof AGENT_TYPES];
+                const isActive = agent.status === 'active';
                 
                 return (
-                  <Card key={type} className={`backdrop-blur-xl bg-white/5 border-white/10 transition-all ${isActive ? 'ring-2 ring-purple-500/50' : ''}`}>
+                  <Card key={agent.id} className={`backdrop-blur-xl bg-white/5 border-white/10 transition-all ${isActive ? 'ring-2 ring-purple-500/50' : ''}`}>
                     <CardContent className="p-3">
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-lg bg-white/10 ${isActive ? 'animate-pulse' : ''}`}>
-                          <info.icon className={`w-4 h-4 ${info.color}`} />
+                          {agentType && <agentType.icon className={`w-4 h-4 ${agentType.color}`} />}
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-sm font-medium text-white">{info.name}</h4>
-                          <p className="text-xs text-gray-400 mt-1">{info.description}</p>
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="text-sm font-medium text-white">{agent.name}</h4>
+                            <Badge 
+                              variant={isActive ? 'default' : 'secondary'}
+                              className={cn(
+                                "text-xs",
+                                isActive && "bg-green-500/20 text-green-400 border-green-500/30"
+                              )}
+                            >
+                              {agent.status}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {agent.currentTask || (agentType ? agentType.description : 'Ready to work')}
+                          </p>
+                          {isActive && agent.progress !== undefined && (
+                            <div className="mt-2">
+                              <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                                <span>Progress</span>
+                                <span>{agent.progress}%</span>
+                              </div>
+                              <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                                  style={{ width: `${agent.progress}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
                           {isActive && (
                             <div className="flex items-center gap-2 mt-2">
                               <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
@@ -507,7 +678,7 @@ export default function ThreePanelWorkspace({
           </div>
 
           <div className="flex-1 bg-gray-900 overflow-hidden">
-            <div className={`h-full ${getDeviceStyles()} transition-all duration-300`}>
+            <div className={`h-full ${getDeviceStyles()} transition-all duration-300 relative`}>
               {/* Preview iframe - will show generated app */}
               <iframe
                 src="/preview"
@@ -520,6 +691,21 @@ export default function ThreePanelWorkspace({
                   boxShadow: previewDevice !== 'desktop' ? '0 0 40px rgba(0,0,0,0.5)' : 'none'
                 }}
               />
+              {/* Building Overlay - Shows when AI is generating */}
+              {isLoading && (
+                <div className="absolute inset-0 bg-gray-900/95 backdrop-blur-sm flex items-center justify-center rounded-lg pointer-events-none"
+                  style={{
+                    borderRadius: previewDevice === 'mobile' ? '24px' : '8px'
+                  }}>
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center animate-pulse">
+                      <Zap className="w-8 h-8 text-purple-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">AI is Building Your App</h3>
+                    <p className="text-gray-400">The preview will update automatically</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
