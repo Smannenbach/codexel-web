@@ -18,6 +18,8 @@ import { cachingService, SpecializedCaches } from "./services/caching-service";
 import { cdnOptimizer, cdnMiddleware } from "./services/cdn-optimizer";
 import { databaseOptimizer } from "./services/database-optimizer";
 import { productionDeployer } from "./services/production-deployer";
+import { intelligentAIOrchestrator } from "./services/intelligent-ai-orchestrator";
+import { codeIntelligenceService } from "./services/code-intelligence";
 import { blogPosts, marketingCampaigns } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -986,6 +988,102 @@ What specific type of website are you looking to create? (e.g., business, portfo
     } catch (error) {
       console.error('Health checks error:', error);
       res.status(500).json({ error: 'Failed to get health checks' });
+    }
+  });
+
+  // Phase 6: Advanced AI & Intelligence Enhancement Routes
+  
+  // Intelligent AI Orchestration
+  app.post('/api/ai/intelligent-request', async (req, res) => {
+    try {
+      const { prompt, requirements = {}, options = {} } = req.body;
+      
+      const result = await intelligentAIOrchestrator.intelligentRequest(
+        prompt,
+        requirements,
+        options
+      );
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Intelligent AI request failed:', error);
+      res.status(500).json({ 
+        error: 'Failed to process intelligent AI request',
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // AI Model Analytics
+  app.get('/api/ai/analytics', async (req, res) => {
+    try {
+      const analytics = intelligentAIOrchestrator.getModelAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      console.error('AI analytics failed:', error);
+      res.status(500).json({ error: 'Failed to get AI analytics' });
+    }
+  });
+
+  // Cost Optimization Analysis
+  app.get('/api/ai/cost-optimization', async (req, res) => {
+    try {
+      const optimization = intelligentAIOrchestrator.getCostOptimization();
+      res.json(optimization);
+    } catch (error) {
+      console.error('Cost optimization analysis failed:', error);
+      res.status(500).json({ error: 'Failed to get cost optimization' });
+    }
+  });
+
+  // Code Intelligence Analysis
+  app.post('/api/code/analyze', async (req, res) => {
+    try {
+      const { code, language, filePath } = req.body;
+      
+      if (!code || !language) {
+        return res.status(400).json({ error: 'Code and language are required' });
+      }
+      
+      const analysis = await codeIntelligenceService.analyzeCode(code, language, filePath);
+      res.json(analysis);
+    } catch (error) {
+      console.error('Code analysis failed:', error);
+      res.status(500).json({ 
+        error: 'Failed to analyze code',
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Auto-fix Application
+  app.post('/api/code/apply-fix', async (req, res) => {
+    try {
+      const { code, fix } = req.body;
+      
+      if (!code || !fix) {
+        return res.status(400).json({ error: 'Code and fix are required' });
+      }
+      
+      const fixedCode = await codeIntelligenceService.applyAutoFix(code, fix);
+      res.json({ fixedCode });
+    } catch (error) {
+      console.error('Auto-fix application failed:', error);
+      res.status(500).json({ 
+        error: 'Failed to apply auto-fix',
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Code Intelligence Analytics
+  app.get('/api/code/analytics', async (req, res) => {
+    try {
+      const analytics = codeIntelligenceService.getAnalyticsInsights();
+      res.json(analytics);
+    } catch (error) {
+      console.error('Code analytics failed:', error);
+      res.status(500).json({ error: 'Failed to get code analytics' });
     }
   });
 
