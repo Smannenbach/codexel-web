@@ -1,5 +1,6 @@
 import { performance } from 'perf_hooks';
 import { Request, Response, NextFunction } from 'express';
+import os from 'os';
 
 interface PerformanceMetrics {
   route: string;
@@ -278,8 +279,8 @@ class PerformanceOptimizer {
     const summary = this.getSummary();
     
     // Calculate CPU usage percentage (approximated from load average)
-    const loadAvg = require('os').loadavg();
-    const cpuUsage = Math.min(loadAvg[0] * 100 / require('os').cpus().length, 100);
+    const loadAvg = os.loadavg();
+    const cpuUsage = Math.min(loadAvg[0] * 100 / os.cpus().length, 100);
     
     // Calculate memory usage percentage
     const memoryUsage = (memUsage.heapUsed / memUsage.heapTotal) * 100;
