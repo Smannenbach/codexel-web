@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,9 @@ import {
   History,
   Zap,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Keyboard,
+  Sparkles
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -151,12 +153,30 @@ export default function OneClickSnapshot({
 
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Keyboard Shortcuts Info */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+        <div className="flex items-center gap-2 mb-2">
+          <Keyboard className="w-4 h-4 text-blue-600" />
+          <span className="text-sm font-medium text-blue-900 dark:text-blue-100">One-Click Shortcuts</span>
+        </div>
+        <div className="flex items-center gap-4 text-xs text-blue-700 dark:text-blue-300">
+          <div className="flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 rounded border text-[10px]">Ctrl+S</kbd>
+            <span>Quick Save</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 rounded border text-[10px]">Ctrl+R</kbd>
+            <span>Quick Restore</span>
+          </div>
+        </div>
+      </div>
+
       {/* One-Click Actions */}
       <div className="flex items-center gap-2">
         <Button
           onClick={handleQuickSave}
           disabled={quickSaveMutation.isPending}
-          className="gap-2 bg-green-600 hover:bg-green-700"
+          className="gap-2 bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl transition-all duration-200"
           size="sm"
         >
           {quickSaveMutation.isPending ? (
@@ -171,13 +191,13 @@ export default function OneClickSnapshot({
           onClick={handleAutoSave}
           disabled={autoSaveMutation.isPending}
           variant="outline"
-          className="gap-2"
+          className="gap-2 border-orange-200 hover:border-orange-300 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950"
           size="sm"
         >
           {autoSaveMutation.isPending ? (
-            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
           ) : (
-            <Zap className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 text-orange-500" />
           )}
           Auto Save
         </Button>
@@ -260,27 +280,39 @@ export default function OneClickSnapshot({
   );
 }
 
-// Hook for keyboard shortcuts
+// Enhanced keyboard shortcuts hook with visual feedback
 export function useSnapshotShortcuts(
   onQuickSave: () => void,
   onQuickRestore: () => void
 ) {
-  useState(() => {
+  const { toast } = useToast();
+
+  useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Ctrl+S or Cmd+S for quick save
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
+        toast({
+          title: "💾 Quick Save",
+          description: "Saving workspace snapshot...",
+          duration: 2000,
+        });
         onQuickSave();
       }
       
-      // Ctrl+R or Cmd+R for quick restore (not Z to avoid conflicts)
+      // Ctrl+R or Cmd+R for quick restore
       if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
+        toast({
+          title: "🔄 Quick Restore",
+          description: "Restoring latest workspace snapshot...",
+          duration: 2000,
+        });
         onQuickRestore();
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  });
+  }, [onQuickSave, onQuickRestore, toast]);
 }

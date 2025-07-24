@@ -45,7 +45,6 @@ import { projectTemplates } from '@shared/templates';
 import { marketingStacks } from '@shared/marketing-stacks';
 import { WorkspaceSnapshots } from './WorkspaceSnapshots';
 import OneClickSnapshot, { useSnapshotShortcuts } from './OneClickSnapshot';
-import { History, Camera, Save } from 'lucide-react';
 
 interface ThreePanelWorkspaceProps {
   projectId: number;
@@ -1041,6 +1040,27 @@ export default function ThreePanelWorkspace({
         </DialogContent>
       </Dialog>
 
+      {/* Floating One-Click Snapshot */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <OneClickSnapshot
+          projectId={projectId}
+          getCurrentWorkspaceState={getCurrentWorkspaceState}
+          onRestore={(snapshotData) => {
+            // Restore workspace state
+            if (snapshotData.panelSizes) {
+              setPanelSizes(snapshotData.panelSizes);
+            }
+            if (snapshotData.previewDevice) {
+              setPreviewDevice(snapshotData.previewDevice);
+            }
+            if (snapshotData.selectedModel) {
+              setSelectedModel(snapshotData.selectedModel);
+            }
+          }}
+          className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl p-4 shadow-2xl max-w-sm"
+        />
+      </div>
+
       {/* Workspace Snapshots Dialog */}
       <Dialog open={showSnapshots} onOpenChange={setShowSnapshots}>
         <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-900 border-gray-800 overflow-y-auto">
@@ -1066,16 +1086,7 @@ export default function ThreePanelWorkspace({
                 }
                 setShowSnapshots(false);
               }}
-              getCurrentWorkspaceState={() => ({
-                panelSizes,
-                previewDevice,
-                selectedModel,
-                messages: messages.slice(-10), // Keep last 10 messages
-                agents: activeAgents,
-                lastPanelFocus,
-                projectId,
-                timestamp: new Date().toISOString()
-              })}
+              getCurrentWorkspaceState={getCurrentWorkspaceState}
             />
           </div>
         </DialogContent>
