@@ -27,7 +27,13 @@ import {
   CircleCheckBig,
   Share2,
   BarChart,
-  MessageSquare
+  MessageSquare,
+  Save,
+  History,
+  Eye,
+  BarChart3,
+  Settings,
+  X
 } from 'lucide-react';
 import { AI_MODELS } from '@/lib/ai-models';
 import { apiRequest } from '@/lib/queryClient';
