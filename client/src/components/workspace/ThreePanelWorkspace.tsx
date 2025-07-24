@@ -44,6 +44,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { projectTemplates } from '@shared/templates';
 import { marketingStacks } from '@shared/marketing-stacks';
 import { WorkspaceSnapshots } from './WorkspaceSnapshots';
+import OneClickSnapshot, { useSnapshotShortcuts } from './OneClickSnapshot';
 import { History, Camera, Save } from 'lucide-react';
 
 interface ThreePanelWorkspaceProps {
@@ -203,6 +204,92 @@ export default function ThreePanelWorkspace({
   const [showSnapshots, setShowSnapshots] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
+
+  // Workspace state for snapshots
+  const getCurrentWorkspaceState = () => ({
+    panelSizes,
+    previewDevice,
+    selectedModel,
+    messages: messages.slice(-10), // Keep last 10 messages
+    agents: activeAgents,
+    lastPanelFocus,
+    projectId,
+    timestamp: new Date().toISOString(),
+    attachments: attachments.length,
+    inputValue: inputValue.length > 0 ? inputValue : null
+  });
+
+  // Latest snapshot for quick restore
+  const [latestSnapshotId, setLatestSnapshotId] = useState<number | null>(null);
+
+  // Quick save function for shortcuts
+  const handleQuickSave = async () => {
+    try {
+      const workspaceState = getCurrentWorkspaceState();
+      const timestamp = new Date().toLocaleString();
+      
+      const response = await apiRequest('POST', '/api/snapshots', {
+        projectId,
+        name: `Quick Save ${timestamp}`,
+        description: 'Keyboard shortcut save (Ctrl+S)',
+        snapshotData: workspaceState,
+        tags: ['quick-save', 'keyboard-shortcut'],
+        isAutoSaved: false
+      });
+
+      setLatestSnapshotId(response.snapshot.id);
+      toast({
+        title: "Workspace Saved!",
+        description: "Press Ctrl+R to restore this snapshot",
+      });
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: "Could not save workspace",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Quick restore function for shortcuts
+  const handleQuickRestore = async () => {
+    if (!latestSnapshotId) {
+      toast({
+        title: "No Snapshot to Restore",
+        description: "Save a snapshot first with Ctrl+S",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await apiRequest('POST', '/api/snapshots/restore', { 
+        snapshotId: latestSnapshotId, 
+        projectId 
+      });
+
+      if (response.snapshot) {
+        const snapshot = response.snapshot;
+        if (snapshot.panelSizes) setPanelSizes(snapshot.panelSizes);
+        if (snapshot.previewDevice) setPreviewDevice(snapshot.previewDevice);
+        if (snapshot.selectedModel) setSelectedModel(snapshot.selectedModel);
+        
+        toast({
+          title: "Workspace Restored!",
+          description: "Your workspace has been restored successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Restore Failed",
+        description: "Could not restore workspace",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Add keyboard shortcuts
+  useSnapshotShortcuts(handleQuickSave, handleQuickRestore);
 
   // Auto-save functionality
   useEffect(() => {
@@ -448,7 +535,18 @@ export default function ThreePanelWorkspace({
                 <h2 className="text-lg font-semibold text-white mb-1">AI Team Dashboard</h2>
                 <p className="text-sm text-gray-400">Overall Progress</p>
               </div>
-              <ShareLayoutButton className="ml-2" />
+              <div className="flex items-center gap-1">
+                <Button 
+                  onClick={handleQuickSave}
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 text-green-400 hover:text-green-300 hover:bg-green-400/10"
+                  title="Quick Save (Ctrl+S)"
+                >
+                  <Save className="w-3 h-3" />
+                </Button>
+                <ShareLayoutButton className="ml-2" />
+              </div>
             </div>
             <div className="mt-2 bg-gray-800 rounded-full h-2">
               <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500" 
@@ -458,7 +556,21 @@ export default function ThreePanelWorkspace({
             <p className="text-xs text-gray-500 mt-1">41%</p>
           </div>
           
-          <ScrollArea className="h-[calc(100%-120px)] p-4">
+          {/* One-Click Snapshot Component */}
+          <div className="px-4 py-3 border-b border-gray-800/50">
+            <OneClickSnapshot
+              projectId={projectId}
+              getCurrentWorkspaceState={getCurrentWorkspaceState}
+              onRestore={(snapshotData) => {
+                if (snapshotData.panelSizes) setPanelSizes(snapshotData.panelSizes);
+                if (snapshotData.previewDevice) setPreviewDevice(snapshotData.previewDevice);
+                if (snapshotData.selectedModel) setSelectedModel(snapshotData.selectedModel);
+              }}
+              className="mb-2"
+            />
+          </div>
+          
+          <ScrollArea className="h-[calc(100%-200px)] p-4">
             <div className="space-y-3">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                 Active Agents ({activeAgents.filter(a => a.status === 'active').length})

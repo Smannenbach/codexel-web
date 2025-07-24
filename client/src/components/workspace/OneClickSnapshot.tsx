@@ -273,8 +273,8 @@ export function useSnapshotShortcuts(
         onQuickSave();
       }
       
-      // Ctrl+Z or Cmd+Z for quick restore (last snapshot)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      // Ctrl+R or Cmd+R for quick restore (not Z to avoid conflicts)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
         onQuickRestore();
       }
