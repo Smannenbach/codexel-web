@@ -657,6 +657,10 @@ What specific type of website are you looking to create? (e.g., business, portfo
   const { registerLoadTestingRoutes } = await import('./routes/loadTesting');
   registerLoadTestingRoutes(app);
 
+  // Register live deployment routes
+  const { registerLiveDeploymentRoutes } = await import('./routes/liveDeployment');
+  registerLiveDeploymentRoutes(app);
+
   // Register snapshot routes
   const { registerSnapshotRoutes } = await import('./routes/snapshots');
   registerSnapshotRoutes(app);
