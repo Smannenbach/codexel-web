@@ -51,6 +51,8 @@ import AISalesAgent from './AISalesAgent';
 import ProductionOptimizer from './ProductionOptimizer';
 import { AdvancedAnalytics, DeploymentManager, TestWorkflows, PerformanceMonitor, SecurityMonitor, DeploymentCentral, preloadCriticalComponents } from '../lazy/LazyComponents';
 import MobileAppGenerator from '@/components/workspace/MobileAppGenerator';
+import EnterpriseAnalyticsPanel from './EnterpriseAnalyticsPanel';
+import EnhancedDeploymentPanel from './EnhancedDeploymentPanel';
 import OnboardingGuide, { useOnboarding } from './OnboardingGuide';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { projectTemplates } from '@shared/templates';
@@ -126,6 +128,8 @@ export default function ThreePanelWorkspace({
   const [showCollaboration, setShowCollaboration] = useState(false);
   const [showEnterpriseDeployment, setShowEnterpriseDeployment] = useState(false);
   const [showMobileAppGenerator, setShowMobileAppGenerator] = useState(false);
+  const [showEnterpriseAnalytics, setShowEnterpriseAnalytics] = useState(false);
+  const [showEnhancedDeployment, setShowEnhancedDeployment] = useState(false);
   const audioFeedback = useAudioFeedback();
   const [lastPanelFocus, setLastPanelFocus] = useState<{ panel: string; time: number } | null>(null);
   const [snapIndicators, setSnapIndicators] = useState<number[]>([]);
@@ -778,6 +782,30 @@ export default function ThreePanelWorkspace({
                 >
                   <Smartphone className="w-5 h-5" />
                 </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    audioFeedback.playButtonClick(e.currentTarget);
+                    setShowEnterpriseAnalytics(true);
+                  }}
+                  className="text-gray-400 hover:text-white"
+                  title="Phase 9: Enterprise Analytics"
+                >
+                  <BarChart3 className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    audioFeedback.playButtonClick(e.currentTarget);
+                    setShowEnhancedDeployment(true);
+                  }}
+                  className="text-gray-400 hover:text-white"
+                  title="Phase 9: Enhanced Deployment"
+                >
+                  <RocketIcon className="w-5 h-5" />
+                </Button>
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
                 <SelectTrigger className="w-48 bg-gray-800 border-gray-700">
                   <SelectValue />
@@ -1283,6 +1311,36 @@ export default function ThreePanelWorkspace({
           </DialogHeader>
           <div className="mt-4">
             <MobileAppGenerator />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Phase 9: Enterprise Analytics Dialog */}
+      <Dialog open={showEnterpriseAnalytics} onOpenChange={setShowEnterpriseAnalytics}>
+        <DialogContent className="max-w-7xl h-[90vh] bg-gray-900 border-gray-800 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-purple-500" />
+              Phase 9: Enterprise Analytics & Insights
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <EnterpriseAnalyticsPanel />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Phase 9: Enhanced Deployment Dialog */}
+      <Dialog open={showEnhancedDeployment} onOpenChange={setShowEnhancedDeployment}>
+        <DialogContent className="max-w-7xl h-[90vh] bg-gray-900 border-gray-800 overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <RocketIcon className="w-6 h-6 text-orange-500" />
+              Phase 9: Enhanced Deployment Automation
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <EnhancedDeploymentPanel />
           </div>
         </DialogContent>
       </Dialog>
