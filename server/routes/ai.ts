@@ -241,4 +241,267 @@ Could you tell me more about:
 This helps me show you exactly how Codexel.ai can solve your specific needs and calculate your ROI.`;
 }
 
+// Generate actual website code based on user request
+function generateWebsiteCode(message: string, context: any): string {
+  const lowerMessage = message.toLowerCase();
+  
+  // Determine website type and generate appropriate code
+  if (lowerMessage.includes('loan') || lowerMessage.includes('mortgage') || lowerMessage.includes('finance')) {
+    return generateLoanOfficerWebsite();
+  } else {
+    // Generic professional website
+    return generateGenericWebsite(message);
+  }
+}
+
+function generateLoanOfficerWebsite(): string {
+  return `I'll build that loan officer website for you! Here's your complete, professional website:
+
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Loan Officer - Your Mortgage Expert</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+        .nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #667eea; }
+        .nav-links { display: flex; list-style: none; gap: 2rem; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: #667eea; }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 120px 0 80px; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.3rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-button { background: linear-gradient(45deg, #ff6b6b, #feca57); color: white; padding: 15px 30px; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.3s; text-decoration: none; display: inline-block; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .services { background: white; padding: 80px 0; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .service-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .calculator { background: linear-gradient(135deg, #74b9ff, #0984e3); color: white; padding: 80px 0; }
+        .calc-form { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; max-width: 500px; margin: 2rem auto; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        .form-group input { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 1rem; }
+        .contact { background: #2d3436; color: white; padding: 80px 0; text-align: center; }
+        .contact-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .contact-item { background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .nav-links { display: none; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">LoanPro Expert</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#calculator">Calculator</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Your Mortgage Success Starts Here</h1>
+            <p>Professional loan officer with 15+ years experience helping families achieve homeownership dreams.</p>
+            <a href="#contact" class="cta-button">Get Pre-Approved Today</a>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem;">Mortgage Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">First-Time Buyers</h3>
+                    <p>Special programs and guidance for first-time homebuyers. FHA, VA, USDA loans available.</p>
+                </div>
+                <div class="service-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Refinancing</h3>
+                    <p>Lower your monthly payments or cash out equity with our refinancing solutions.</p>
+                </div>
+                <div class="service-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Investment Properties</h3>
+                    <p>Financing solutions for real estate investors and rental property purchases.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="calculator" id="calculator">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Mortgage Calculator</h2>
+            <div class="calc-form">
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount ($)</label>
+                    <input type="number" id="loanAmount" placeholder="400,000">
+                </div>
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%)</label>
+                    <input type="number" id="interestRate" step="0.01" placeholder="6.5">
+                </div>
+                <div class="form-group">
+                    <label for="loanTerm">Loan Term (years)</label>
+                    <input type="number" id="loanTerm" placeholder="30">
+                </div>
+                <button class="cta-button" onclick="calculatePayment()" style="width: 100%;">Calculate Payment</button>
+                <div id="result" style="margin-top: 1rem; font-size: 1.2rem; font-weight: bold; text-align: center;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Get Started?</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>📞 Call Me</h3>
+                    <p>(555) 123-4567</p>
+                </div>
+                <div class="contact-item">
+                    <h3>✉️ Email Me</h3>
+                    <p>loans@loanproexpert.com</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🏢 Visit Office</h3>
+                    <p>123 Main Street<br>City, State 12345</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function calculatePayment() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const annualRate = parseFloat(document.getElementById('interestRate').value) / 100;
+            const loanTermYears = parseFloat(document.getElementById('loanTerm').value);
+            
+            if (!loanAmount || !annualRate || !loanTermYears) {
+                document.getElementById('result').innerHTML = 'Please fill in all fields';
+                return;
+            }
+            
+            const monthlyRate = annualRate / 12;
+            const numPayments = loanTermYears * 12;
+            const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                                 (Math.pow(1 + monthlyRate, numPayments) - 1);
+            
+            document.getElementById('result').innerHTML = \`Monthly Payment: $\${monthlyPayment.toFixed(2)}\`;
+        }
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
+\`\`\`
+
+Your professional loan officer website is complete and ready to deploy!`;
+}
+
+function generateGenericWebsite(message: string): string {
+  return `I'll build a professional website for you! Here's your complete website:
+
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Business Website</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 0; position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; }
+        .nav-links { display: flex; list-style: none; gap: 2rem; }
+        .nav-links a { color: white; text-decoration: none; transition: opacity 0.3s; }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 120px 0 80px; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.3rem; margin-bottom: 2rem; max-width: 600px; margin: 0 auto 2rem; }
+        .cta-button { background: linear-gradient(45deg, #ff6b6b, #feca57); color: white; padding: 15px 30px; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; transition: transform 0.3s; text-decoration: none; display: inline-block; }
+        .cta-button:hover { transform: translateY(-2px); }
+        .features { padding: 80px 0; background: #f8f9fa; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .feature-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); }
+        .contact { background: #2d3436; color: white; padding: 80px 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">YourBusiness</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Welcome to Your Success</h1>
+            <p>Professional solutions tailored to your business needs. We deliver results that matter.</p>
+            <a href="#contact" class="cta-button">Get Started Today</a>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem;">Our Services</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Professional Service</h3>
+                    <p>High-quality solutions delivered with expertise and attention to detail.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Customer Focus</h3>
+                    <p>Your success is our priority. We work closely with you to achieve your goals.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Proven Results</h3>
+                    <p>Track record of delivering measurable results for businesses like yours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Get Started?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Contact us today for a free consultation</p>
+            <a href="mailto:contact@yourbusiness.com" class="cta-button">Contact Us Now</a>
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
+\`\`\`
+
+Your professional website is complete and ready to deploy!`;
+}
+
 export default router;

@@ -21,6 +21,7 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import TestWorkspace from "@/pages/TestWorkspace";
 import SharedWorkspaceView from "@/components/workspace/SharedWorkspaceView";
 import ProductionDashboard from "@/pages/ProductionDashboard";
+import AdminDashboard from "@/pages/admin-dashboard";
 import MarketingLanding from "@/pages/marketing-landing";
 import TestPage from "@/pages/TestPage";
 import SimpleLanding from "@/pages/SimpleLanding";
@@ -47,6 +48,7 @@ function Router() {
         <Route path="/test" component={TestWorkspace} />
         <Route path="/shared-workspace/:id" component={SharedWorkspaceView} />
         <Route path="/production" component={ProductionDashboard} />
+        <Route path="/admin" component={AdminDashboard} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
         <Route path="/disclosures" component={Disclosures} />
