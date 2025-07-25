@@ -617,21 +617,9 @@ export default function ThreePanelWorkspace({
             <p className="text-xs text-gray-500 mt-1">41%</p>
           </div>
           
-          {/* One-Click Snapshot Component */}
-          <div className="px-4 py-3 border-b border-gray-800/50">
-            <OneClickSnapshot
-              projectId={projectId}
-              getCurrentWorkspaceState={getCurrentWorkspaceState}
-              onRestore={(snapshotData) => {
-                if (snapshotData.panelSizes) setPanelSizes(snapshotData.panelSizes);
-                if (snapshotData.previewDevice) setPreviewDevice(snapshotData.previewDevice);
-                if (snapshotData.selectedModel) setSelectedModel(snapshotData.selectedModel);
-              }}
-              className="mb-2"
-            />
-          </div>
+
           
-          <ScrollArea className="h-[calc(100%-180px)] p-4">
+          <ScrollArea className="h-[calc(100%-120px)] p-4">
             <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                 Active Agents ({activeAgents.filter(a => a.status === 'active').length})
