@@ -59,6 +59,7 @@ import { projectTemplates } from '@shared/templates';
 import { marketingStacks } from '@shared/marketing-stacks';
 import { WorkspaceSnapshots } from './WorkspaceSnapshots';
 import { useSnapshotShortcuts } from './OneClickSnapshot';
+import CollapsibleSnapshotWidget from './CollapsibleSnapshotWidget';
 import { AudioSettings } from '@/components/ui/audio-settings';
 import { useAudioFeedback } from '@/hooks/useAudioFeedback';
 import { AdvancedCodeGeneration } from './AdvancedCodeGeneration';
@@ -1401,6 +1402,17 @@ export default function ThreePanelWorkspace({
         isOpen={showOnboarding}
         onClose={() => setShowOnboarding(false)}
         onComplete={completeOnboarding}
+      />
+
+      {/* Collapsible Snapshot Widget */}
+      <CollapsibleSnapshotWidget
+        projectId={projectId}
+        getCurrentWorkspaceState={getCurrentWorkspaceState}
+        onRestore={(snapshotData) => {
+          if (snapshotData.panelSizes) setPanelSizes(snapshotData.panelSizes);
+          if (snapshotData.previewDevice) setPreviewDevice(snapshotData.previewDevice);
+          if (snapshotData.selectedModel) setSelectedModel(snapshotData.selectedModel);
+        }}
       />
     </ResizablePanelGroup>
   );
