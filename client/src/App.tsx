@@ -30,8 +30,7 @@ function Router() {
   try {
     return (
       <Switch>
-        <Route path="/" component={SimpleTest} />
-        <Route path="/marketing-test" component={MarketingLanding} />
+        <Route path="/" component={MarketingLanding} />
         <Route path="/landing" component={SimpleLanding} />
         <Route path="/marketing" component={MarketingLanding} />
         <Route path="/test-simple" component={TestPage} />
@@ -49,6 +48,7 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/terms" component={Terms} />
         <Route path="/disclosures" component={Disclosures} />
+        <Route path="/preview" component={() => <div className="min-h-screen bg-gray-100 flex items-center justify-center"><h1>Preview Panel</h1></div>} />
         <Route component={NotFound} />
       </Switch>
     );
