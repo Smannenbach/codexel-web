@@ -518,7 +518,7 @@ export default function ThreePanelWorkspace({
   return (
     <ResizablePanelGroup 
       direction="horizontal" 
-      className="h-screen bg-gray-950 workspace-container"
+      className="h-screen max-h-screen bg-gray-950 workspace-container overflow-hidden"
       autoSaveId="workspace-layout"
       onLayout={async (sizes) => {
         // Apply snapping logic
@@ -605,8 +605,8 @@ export default function ThreePanelWorkspace({
             />
           </div>
           
-          <ScrollArea className="h-[calc(100%-200px)] p-4">
-            <div className="space-y-3">
+          <ScrollArea className="h-[calc(100%-180px)] p-4">
+            <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                 Active Agents ({activeAgents.filter(a => a.status === 'active').length})
               </p>
@@ -617,10 +617,10 @@ export default function ThreePanelWorkspace({
                 
                 return (
                   <Card key={agent.id} className={`backdrop-blur-xl bg-white/5 border-white/10 transition-all ${isActive ? 'ring-2 ring-purple-500/50' : ''}`}>
-                    <CardContent className="p-3">
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg bg-white/10 ${isActive ? 'animate-pulse' : ''}`}>
-                          {agentType && <agentType.icon className={`w-4 h-4 ${agentType.color}`} />}
+                    <CardContent className="p-2">
+                      <div className="flex items-start gap-2">
+                        <div className={`p-1.5 rounded-md bg-white/10 ${isActive ? 'animate-pulse' : ''}`}>
+                          {agentType && <agentType.icon className={`w-3.5 h-3.5 ${agentType.color}`} />}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">

@@ -183,7 +183,7 @@ export function ProjectSidebar({
                     <Label>Choose a Template</Label>
                     <Badge variant="secondary">{projectTemplates.length} templates</Badge>
                   </div>
-                  <ScrollArea className="h-[300px] pr-4">
+                  <ScrollArea className="h-[180px] pr-4">
                     <div className="grid grid-cols-2 gap-3">
                       {projectTemplates.slice(0, 10).map((template) => (
                         <Card
@@ -235,7 +235,7 @@ export function ProjectSidebar({
                     <Label>Company Templates</Label>
                     <Badge variant="secondary">{getCompanyTemplates().length} templates</Badge>
                   </div>
-                  <ScrollArea className="h-[300px] pr-4">
+                  <ScrollArea className="h-[180px] pr-4">
                     <div className="grid grid-cols-2 gap-3">
                       {getCompanyTemplates().slice(0, 10).map((template) => (
                         <Card
@@ -279,7 +279,7 @@ export function ProjectSidebar({
                     <Label>Individual Professional Templates</Label>
                     <Badge variant="secondary">{getIndividualTemplates().length} templates</Badge>
                   </div>
-                  <ScrollArea className="h-[300px] pr-4">
+                  <ScrollArea className="h-[180px] pr-4">
                     <div className="grid grid-cols-2 gap-3">
                       {getIndividualTemplates().slice(0, 10).map((template) => (
                         <Card
