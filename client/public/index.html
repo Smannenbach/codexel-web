@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Codexel.ai - #1 AI App Platform | Better than ChatGPT Canvas</title>
+    <meta name="description" content="Revolutionary AI app platform with Canvas interface, perfect memory, and 17+ app integrations. Build production apps faster than ChatGPT Canvas, Cursor, or Replit." />
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #0a0a0a;
+        color: white;
+        min-height: 100vh;
+      }
+      .loading-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .loading-content {
+        text-align: center;
+        animation: fadeIn 0.5s ease-in;
+      }
+      .loading-content h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .loading-content p {
+        font-size: 1.5rem;
+        opacity: 0.8;
+        margin-bottom: 2rem;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading-container">
+        <div class="loading-content">
+          <h1>Codexel.ai</h1>
+          <p>Build AI Applications Without Code</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
