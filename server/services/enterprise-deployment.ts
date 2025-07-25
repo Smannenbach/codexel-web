@@ -527,7 +527,7 @@ class EnterpriseDeploymentService {
   }
 
   private updateEnvironmentHealth(): void {
-    const performanceMetrics = performanceOptimizer.getPerformanceMetrics();
+    const performanceMetrics = performanceOptimizer.getCurrentMetrics();
     
     this.environments.forEach(environment => {
       // Update health metrics with real data
