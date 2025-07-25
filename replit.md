@@ -170,7 +170,7 @@ The architecture is designed to support rapid iteration and scaling from MVP to 
 - **Critical Bug Fix**: Resolved TypeScript syntax errors and client-side error handling that was causing blank page issues at https://codexel.ai/
 - **Fixed React Hooks Error**: Temporarily disabled FeedbackWidget component due to hooks order violation causing app crash
 - **Interface Styling Issue Resolution**: Successfully reverted all custom CSS modifications that were causing display problems and restored workspace to original functional design
-- **Site Status Update**: Marketing landing page working correctly at https://codexel.replit.app/ - custom domain https://codexel.ai/ requires manual redeploy to sync latest fixes
+- **Critical Deployment Issue**: Custom domain https://codexel.ai/ serving old cached version (workspace interface) while development domain https://codexel.replit.app/ shows correct marketing landing page - requires manual redeploy to fix
 - **Server Stability**: All 12 phases now running simultaneously with optimized performance and error handling
 
 ### Previous Updates (January 24, 2025)
