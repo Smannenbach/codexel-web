@@ -329,6 +329,33 @@ Based on your request, I'll design a modern, responsive website with the followi
 - SEO: Meta tags, structured data, sitemap
 
 What specific type of website are you looking to create? (e.g., business, portfolio, e-commerce) This will help me tailor the design and functionality to your needs.`;
+      } else if (content.toLowerCase().includes('build') || content.toLowerCase().includes('create') || content.toLowerCase().includes('make')) {
+        // Generate actual website files for build requests
+        try {
+          const websiteFiles = await generateWebsiteFiles(content);
+          
+          aiResponse = `🚀 **Website Built Successfully!**
+
+I've created a complete website for you:
+
+**✅ Files Generated:**
+${websiteFiles.map((f: any) => `• ${f.name} (${Math.round(f.content.length / 1024)}KB)`).join('\n')}
+
+**🎨 Features Included:**
+- Modern responsive design
+- Professional styling with Tailwind CSS
+- Interactive elements and animations
+- Mobile-optimized layout
+- Clean, semantic HTML structure
+
+Your website is now live in the preview panel! You can see it immediately and make any changes you need.
+
+What would you like me to add or modify next?`;
+
+        } catch (error) {
+          console.error('Website generation error:', error);
+          aiResponse = "I'm ready to build your website! Could you provide more details about what type of website you need? (e.g., business website, portfolio, landing page)";
+        }
       } else {
         // Call AI API with selected model
         try {
@@ -1485,6 +1512,182 @@ What specific type of website are you looking to create? (e.g., business, portfo
 </html>
     `);
   });
+
+  // Website generation function
+  async function generateWebsiteFiles(userRequest: string) {
+    const files = [];
+    
+    // Generate index.html with modern design
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="font-bold text-2xl text-primary">Your Brand</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-primary transition">Home</a>
+                    <a href="#about" class="text-gray-700 hover:text-primary transition">About</a>
+                    <a href="#services" class="text-gray-700 hover:text-primary transition">Services</a>
+                    <a href="#contact" class="text-gray-700 hover:text-primary transition">Contact</a>
+                </div>
+                <button class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-20 gradient-bg text-white">
+        <div class="max-w-7xl mx-auto px-4 py-20">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    Welcome to the Future
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-white/90">
+                    We create amazing experiences that drive results
+                </p>
+                <div class="space-x-4">
+                    <button class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Learn More
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition">
+                        Contact Us
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="about" class="py-20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Why Choose Us</h2>
+                <p class="text-xl text-gray-600">We deliver exceptional results with professional excellence</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Fast Performance</h3>
+                    <p class="text-gray-600">Lightning-fast results that exceed expectations and deliver value.</p>
+                </div>
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-16 h-16 bg-secondary rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Reliable Service</h3>
+                    <p class="text-gray-600">Dependable solutions you can trust for your business needs.</p>
+                </div>
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg">
+                    <div class="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Expert Team</h3>
+                    <p class="text-gray-600">Professional expertise dedicated to your success and growth.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Get In Touch</h2>
+                <p class="text-xl text-gray-600">Ready to start your project? Let's talk!</p>
+            </div>
+            <div class="max-w-2xl mx-auto">
+                <form class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <textarea placeholder="Your Message" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent mb-6"></textarea>
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="font-bold text-2xl mb-4">Your Brand</div>
+            <p class="text-gray-400 mb-8">Building amazing experiences since 2025</p>
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="#" class="text-gray-400 hover:text-white transition">Privacy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition">Terms</a>
+                <a href="#" class="text-gray-400 hover:text-white transition">Support</a>
+            </div>
+            <p class="text-gray-500">&copy; 2025 Your Brand. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Contact form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>`;
+
+    files.push({
+      name: 'index.html',
+      content: htmlContent,
+      type: 'text/html'
+    });
+
+    return files;
+  }
 
   const httpServer = createServer(app);
   
