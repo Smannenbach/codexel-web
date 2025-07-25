@@ -58,11 +58,6 @@ export default function FeedbackWidget() {
     retry: 1
   });
 
-  // Don't render widget if there's an error or it's disabled
-  if (error || !config?.enabled) {
-    return null;
-  }
-
   // Submit feedback mutation
   const submitFeedbackMutation = useMutation({
     mutationFn: async (feedback: any) => {

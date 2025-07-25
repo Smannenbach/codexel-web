@@ -28,8 +28,8 @@ function Router() {
   try {
     return (
       <Switch>
-        <Route path="/" component={TestPage} />
-        <Route path="/marketing" component={MarketingLanding} />
+        <Route path="/" component={MarketingLanding} />
+        <Route path="/test-simple" component={TestPage} />
         <Route path="/home" component={Home} />
         <Route path="/workspace" component={Workspace} />
         <Route path="/templates" component={Templates} />
@@ -70,9 +70,11 @@ function App() {
             <div className="min-h-screen bg-black">
               <Toaster />
               <Router />
+              {/* Temporarily disabled due to hooks error
               <ErrorBoundary fallback={<div />}>
                 <FeedbackWidget />
               </ErrorBoundary>
+              */}
             </div>
           </TooltipProvider>
         </ThemeProvider>
