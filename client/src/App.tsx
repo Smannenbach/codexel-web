@@ -26,12 +26,13 @@ import TestPage from "@/pages/TestPage";
 import SimpleLanding from "@/pages/SimpleLanding";
 import SimpleTest from "@/pages/simple-test";
 import Diagnostic from "@/pages/diagnostic";
+import SimpleMarketing from "@/pages/simple-marketing";
 
 function Router() {
   try {
     return (
       <Switch>
-        <Route path="/" component={MarketingLanding} />
+        <Route path="/" component={SimpleMarketing} />
         <Route path="/landing" component={SimpleLanding} />
         <Route path="/marketing" component={MarketingLanding} />
         <Route path="/test-simple" component={TestPage} />
