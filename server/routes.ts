@@ -1375,6 +1375,92 @@ What specific type of website are you looking to create? (e.g., business, portfo
   const { registerPhase12Routes } = await import('./routes/phase12-routes');
   registerPhase12Routes(app);
 
+  // Preview route for the iframe
+  app.get('/preview', (req, res) => {
+    res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-container {
+            text-align: center;
+            max-width: 600px;
+        }
+        .preview-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .preview-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        .preview-steps {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: left;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .step-number {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-title">🚀 App Preview</div>
+        <div class="preview-subtitle">Your generated app will appear here</div>
+        <div class="preview-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>Describe your app idea in the chat</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>AI will generate your application</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>Live preview will appear in this area</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `);
+  });
+
   const httpServer = createServer(app);
   
   // Initialize real-time collaboration WebSocket server

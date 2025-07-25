@@ -29,7 +29,7 @@ function Router() {
   try {
     return (
       <Switch>
-        <Route path="/" component={Workspace} />
+        <Route path="/" component={MarketingLanding} />
         <Route path="/landing" component={SimpleLanding} />
         <Route path="/marketing" component={MarketingLanding} />
         <Route path="/test-simple" component={TestPage} />
