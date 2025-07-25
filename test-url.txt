@@ -1,0 +1,6 @@
+Your development URL is:
+https://b5928509-35cf-4960-9577-7d7f338bc9f8-00-g975rvh8k4ed.worf.replit.dev/
+
+Please try accessing this URL directly to test if the app is working there.
+
+The production domain https://codexel.ai/ is serving cached files that need to be updated through deployment.
