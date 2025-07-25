@@ -118,6 +118,7 @@ export default function ThreePanelWorkspace({
   const [inputValue, setInputValue] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-4-turbo');
   const [isLoading, setIsLoading] = useState(false);
+  const [isWorkspaceLoaded, setIsWorkspaceLoaded] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isResizing, setIsResizing] = useState(false);
@@ -433,20 +434,30 @@ export default function ThreePanelWorkspace({
     }
   };
 
-  // Load and save panel configuration
+  // Load and save panel configuration with loading state
   useEffect(() => {
-    // The autoSaveId handles basic panel sizes, but we can extend it
-    const savedConfig = localStorage.getItem('workspace-advanced-config');
-    if (savedConfig) {
-      try {
-        const config = JSON.parse(savedConfig);
-        // Apply any advanced configuration here
-        if (config.previewDevice) setPreviewDevice(config.previewDevice);
-        if (config.selectedModel) setSelectedModel(config.selectedModel);
-      } catch (e) {
-        console.error('Failed to load workspace config:', e);
+    const loadWorkspaceConfig = async () => {
+      // Add a small delay to ensure styles are loaded and prevent FOUC
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // The autoSaveId handles basic panel sizes, but we can extend it
+      const savedConfig = localStorage.getItem('workspace-advanced-config');
+      if (savedConfig) {
+        try {
+          const config = JSON.parse(savedConfig);
+          // Apply any advanced configuration here
+          if (config.previewDevice) setPreviewDevice(config.previewDevice);
+          if (config.selectedModel) setSelectedModel(config.selectedModel);
+        } catch (e) {
+          console.error('Failed to load workspace config:', e);
+        }
       }
-    }
+      
+      // Mark workspace as loaded after configuration is applied
+      setIsWorkspaceLoaded(true);
+    };
+    
+    loadWorkspaceConfig();
   }, []);
 
   // Save advanced configuration
@@ -515,10 +526,25 @@ export default function ThreePanelWorkspace({
     }
   }, [isLoading]);
 
+  // Show loading state while workspace is initializing
+  if (!isWorkspaceLoaded) {
+    return (
+      <div className="h-screen max-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-4" />
+          <p className="text-gray-400">Initializing workspace...</p>
+          <div className="mt-4 w-32 h-1 bg-gray-800 rounded-full mx-auto overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ResizablePanelGroup 
       direction="horizontal" 
-      className="h-screen max-h-screen bg-gray-950 workspace-container overflow-hidden"
+      className="h-screen max-h-screen bg-gray-950 workspace-container loaded overflow-hidden"
       autoSaveId="workspace-layout"
       onLayout={async (sizes) => {
         // Apply snapping logic

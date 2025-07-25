@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent flash of unstyled content (FOUC) */
+.workspace-container {
+  visibility: hidden;
+}
+
+.workspace-container.loaded {
+  visibility: visible;
+}
+
 /* Enhanced Resizable Handle Styles */
 [data-panel-resize-handle-id] {
   @apply relative flex w-2 items-center justify-center bg-transparent transition-all duration-200;
