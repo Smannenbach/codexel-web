@@ -525,11 +525,12 @@ export const UXEnhancement: React.FC = () => {
       <p>${prediction.description}</p>
     </motion.div>
   );
-};
+`;
+  }
 
   private generateSecurityEnhancer(prediction: PredictiveInsight): string {
     return `// Auto-generated security enhancer for: ${prediction.description}
-export class SecurityEnhancer {
+class SecurityEnhancer {
   validateInput(input: any): boolean {
     // Security validation logic
     if (!input || typeof input !== 'object') return false;
@@ -550,10 +551,10 @@ export class SecurityEnhancer {
 
   private generateCodeImprover(prediction: PredictiveInsight): string {
     return `// Auto-generated code improver for: ${prediction.description}
-export class CodeImprover {
+class CodeImprover {
   analyzeCode(code: string): any[] {
     // Code analysis logic
-    const issues = [];
+    const issues: any[] = [];
     // Detect common issues
     return issues;
   }
@@ -567,7 +568,7 @@ export class CodeImprover {
     // Performance optimization logic
     return code;
   }
-}`;`;
+}`;
   }
 
   // Background processing loops
