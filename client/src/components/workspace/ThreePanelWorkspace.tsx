@@ -67,7 +67,6 @@ import CollaborationPanel from './CollaborationPanel';
 import EnterpriseDeploymentPanel from './EnterpriseDeploymentPanel';
 import { Phase10Panel } from './Phase10Panel';
 import { Phase11Panel } from './Phase11Panel';
-import './WorkspaceStyles.css';
 
 interface ThreePanelWorkspaceProps {
   projectId: number;
@@ -564,40 +563,32 @@ export default function ThreePanelWorkspace({
     >
       {/* Left Panel - AI Team Dashboard */}
       <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
-        <div className="h-full ai-team-panel relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 pointer-events-none" />
-          <div className="relative p-6 border-b border-gray-800/50 backdrop-blur-xl">
-            <div className="flex items-start justify-between mb-4">
+        <div className="h-full bg-gradient-to-br from-gray-900 to-gray-950 border-r border-gray-800">
+          <div className="p-4 border-b border-gray-800">
+            <div className="flex items-start justify-between mb-2">
               <div>
-                <h2 className="text-xl font-bold text-white mb-1 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">AI Team Dashboard</h2>
-                <p className="text-sm text-gray-300">Intelligent Agents at Work</p>
+                <h2 className="text-lg font-semibold text-white mb-1">AI Team Dashboard</h2>
+                <p className="text-sm text-gray-400">Overall Progress</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button 
                   onClick={handleQuickSave}
                   variant="ghost" 
                   size="icon" 
-                  className="h-8 w-8 text-green-400 hover:text-green-300 hover:bg-green-400/20 transition-all duration-200"
+                  className="h-7 w-7 text-green-400 hover:text-green-300 hover:bg-green-400/10"
                   title="Quick Save (Ctrl+S)"
                 >
-                  <Save className="w-4 h-4" />
+                  <Save className="w-3 h-3" />
                 </Button>
-                <ShareLayoutButton className="ml-1" />
+                <ShareLayoutButton className="ml-2" />
               </div>
             </div>
-            <div className="glass-card p-3">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-gray-300 font-medium">Overall Progress</p>
-                <p className="text-sm font-bold text-white">41%</p>
-              </div>
-              <div className="bg-gray-800/50 rounded-full h-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 h-full rounded-full transition-all duration-500 relative" 
-                  style={{ width: '41%' }} 
-                >
-                  <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                </div>
-              </div>
+            <div className="mt-2 bg-gray-800 rounded-full h-2">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500" 
+                style={{ width: '41%' }} 
+              />
             </div>
+            <p className="text-xs text-gray-500 mt-1">41%</p>
           </div>
           
           {/* One-Click Snapshot Component */}
@@ -625,57 +616,52 @@ export default function ThreePanelWorkspace({
                 const isActive = agent.status === 'active';
                 
                 return (
-                  <div key={agent.id} className={`agent-card rounded-xl p-4 transition-all duration-300 ${isActive ? 'ring-2 ring-purple-500/50' : ''}`}>
-                    <div className={`agent-status ${isActive ? 'active' : agent.status === 'completed' ? 'active' : ''}`} />
-                    <div className="flex items-start gap-4">
-                      <div className={`agent-icon ${isActive ? 'animate-pulse' : ''}`}>
-                        {agentType && <agentType.icon className="w-6 h-6 text-white" />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-bold text-white">{agent.name}</h4>
-                          <Badge 
-                            variant={isActive ? 'default' : 'secondary'}
-                            className={cn(
-                              "text-xs font-medium",
-                              isActive && "bg-gradient-to-r from-green-500/30 to-emerald-500/30 text-green-300 border-green-500/50"
-                            )}
-                          >
-                            {agent.status}
-                          </Badge>
+                  <Card key={agent.id} className={`backdrop-blur-xl bg-white/5 border-white/10 transition-all ${isActive ? 'ring-2 ring-purple-500/50' : ''}`}>
+                    <CardContent className="p-3">
+                      <div className="flex items-start gap-3">
+                        <div className={`p-2 rounded-lg bg-white/10 ${isActive ? 'animate-pulse' : ''}`}>
+                          {agentType && <agentType.icon className={`w-4 h-4 ${agentType.color}`} />}
                         </div>
-                        <p className="text-xs text-gray-300 leading-relaxed">
-                          {agent.currentTask || (agentType ? agentType.description : 'Ready to work')}
-                        </p>
-                        {isActive && agent.progress !== undefined && (
-                          <div className="mt-3">
-                            <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                              <span className="font-medium">Progress</span>
-                              <span className="font-bold">{agent.progress}%</span>
-                            </div>
-                            <div className="w-full h-2 bg-gray-800/50 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 relative"
-                                style={{ width: `${agent.progress}%` }}
-                              >
-                                <div className="absolute inset-0 bg-white/30 animate-pulse" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="text-sm font-medium text-white">{agent.name}</h4>
+                            <Badge 
+                              variant={isActive ? 'default' : 'secondary'}
+                              className={cn(
+                                "text-xs",
+                                isActive && "bg-green-500/20 text-green-400 border-green-500/30"
+                              )}
+                            >
+                              {agent.status}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {agent.currentTask || (agentType ? agentType.description : 'Ready to work')}
+                          </p>
+                          {isActive && agent.progress !== undefined && (
+                            <div className="mt-2">
+                              <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                                <span>Progress</span>
+                                <span>{agent.progress}%</span>
+                              </div>
+                              <div className="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                                  style={{ width: `${agent.progress}%` }}
+                                />
                               </div>
                             </div>
-                          </div>
-                        )}
-                        {isActive && (
-                          <div className="flex items-center gap-2 mt-3">
-                            <div className="loading-dots">
-                              <span></span>
-                              <span></span>
-                              <span></span>
+                          )}
+                          {isActive && (
+                            <div className="flex items-center gap-2 mt-2">
+                              <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
+                              <span className="text-xs text-purple-400">Working...</span>
                             </div>
-                            <span className="text-xs text-purple-300 font-medium">Processing...</span>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
@@ -695,13 +681,12 @@ export default function ThreePanelWorkspace({
 
       {/* Middle Panel - Conversation */}
       <ResizablePanel defaultSize={45} minSize={30}>
-        <div className="h-full flex flex-col chat-panel relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 pointer-events-none" />
-          <div className="relative p-6 chat-header">
+        <div className="h-full flex flex-col bg-gray-900">
+          <div className="p-4 border-b border-gray-800 backdrop-blur-xl bg-white/5">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-white mb-1 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Conversation</h2>
-                <p className="text-sm text-gray-300">Chat with Advanced AI Models</p>
+                <h2 className="text-lg font-semibold text-white">Conversation</h2>
+                <p className="text-sm text-gray-400">Chat with GPT-4</p>
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -874,32 +859,28 @@ export default function ThreePanelWorkspace({
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
               {messages.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="glass-card max-w-md mx-auto p-8">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center">
-                      <Bot className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Welcome to Codexel AI</h3>
-                    <p className="text-sm text-gray-300">Describe what you want to build and watch your AI team bring it to life.</p>
-                  </div>
+                <div className="text-center py-12">
+                  <Bot className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">Start Building</h3>
+                  <p className="text-sm text-gray-500">Describe what you want to build...</p>
                 </div>
               ) : (
                 messages.map((message) => (
-                  <div key={message.id} className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                  <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}>
                     {message.role === 'assistant' && (
-                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                        <Bot className="w-5 h-5 text-white" />
+                      <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <div className={`message-container max-w-[80%] ${message.role === 'user' ? 'user-message' : 'ai-message'} rounded-2xl p-4 shadow-lg`}>
-                      <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                      <p className="text-xs text-gray-300/70 mt-2">
+                    <div className={`max-w-[80%] ${message.role === 'user' ? 'bg-blue-600' : 'bg-gray-800'} rounded-lg p-3`}>
+                      <p className="text-sm text-white whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-xs text-gray-400 mt-1">
                         {message.createdAt ? new Date(message.createdAt).toLocaleTimeString() : ''}
                       </p>
                     </div>
                     {message.role === 'user' && (
-                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg">
-                        <User className="w-5 h-5 text-white" />
+                      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-white" />
                       </div>
                     )}
                   </div>
@@ -919,15 +900,15 @@ export default function ThreePanelWorkspace({
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="p-6 border-t border-gray-800/50 backdrop-blur-xl glass-card m-4 rounded-xl">
+          <div className="p-4 border-t border-gray-800 backdrop-blur-xl bg-white/5">
             {attachments.length > 0 && (
               <div className="flex gap-2 mb-3 flex-wrap">
                 {attachments.map((file, index) => (
-                  <Badge key={index} variant="secondary" className="pr-1 bg-purple-500/20 text-purple-300 border-purple-500/30">
+                  <Badge key={index} variant="secondary" className="pr-1">
                     {file.name}
                     <button
                       onClick={() => removeAttachment(index)}
-                      className="ml-2 hover:text-red-400 transition-colors"
+                      className="ml-2 hover:text-red-500"
                     >
                       ×
                     </button>
@@ -940,17 +921,17 @@ export default function ThreePanelWorkspace({
                 variant="ghost"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+                className="text-gray-400 hover:text-white"
               >
-                <Paperclip className="w-5 h-5" />
+                <Paperclip className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+                className="text-gray-400 hover:text-white"
               >
-                <ImageIcon className="w-5 h-5" />
+                <ImageIcon className="w-4 h-4" />
               </Button>
               <Input
                 ref={fileInputRef}
@@ -970,7 +951,7 @@ export default function ThreePanelWorkspace({
                   }
                 }}
                 placeholder="Describe what you want to build..."
-                className="flex-1 min-h-[44px] max-h-[120px] chat-input text-white resize-none rounded-xl px-4"
+                className="flex-1 min-h-[40px] max-h-[120px] bg-gray-800 border-gray-700 text-white resize-none"
               />
               <Button 
                 onClick={(e) => {
@@ -978,10 +959,9 @@ export default function ThreePanelWorkspace({
                   handleSendMessage();
                 }} 
                 disabled={isLoading || (!inputValue.trim() && attachments.length === 0)}
-                className="gradient-button h-[44px] px-6 rounded-xl font-medium"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
               >
-                <Send className="w-4 h-4 mr-2" />
-                Send
+                <Send className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -1000,15 +980,12 @@ export default function ThreePanelWorkspace({
 
       {/* Right Panel - Preview */}
       <ResizablePanel defaultSize={35} minSize={25}>
-        <div className="h-full flex flex-col preview-panel relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/10 via-transparent to-cyan-900/10 pointer-events-none" />
-          <div className="relative p-6 preview-header">
+        <div className="h-full flex flex-col bg-gray-950">
+          <div className="p-4 border-b border-gray-800 backdrop-blur-xl bg-white/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Live Preview</h2>
+                <Zap className="w-5 h-5 text-purple-500" />
+                <h2 className="text-lg font-semibold text-white">Preview</h2>
               </div>
               <div className="flex items-center gap-2">
                 <Button
