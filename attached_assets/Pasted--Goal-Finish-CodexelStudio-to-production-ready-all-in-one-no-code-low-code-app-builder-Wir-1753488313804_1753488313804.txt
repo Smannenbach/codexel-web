@@ -1,0 +1,46 @@
+**Goal:**  
+Finish CodexelStudio to production-ready, all-in-one, no-code/low-code app builder. Wire up authentication, usage tracking, and attachment support so I can launch outside Replit.
+
+**Do these in order:**
+
+1. **Authentication Integration**
+   - Implement user authentication (email/Google login) for the web app.
+   - Replace all hardcoded `userId = 1` instances in backend and frontend with real user IDs from authentication.
+   - Ensure users only see their own projects/workspaces.
+   - Use Supabase Auth, Firebase Auth, or similar (pick what fits this codebase).
+
+2. **Usage Tracking**
+   - Implement usage tracking for each user.
+   - Track feature usage (AI calls, workspace hours, storage, etc).
+   - Store usage stats in the database, per user.
+   - Expose an API endpoint `/api/usage` to retrieve usage for dashboards/billing.
+
+3. **Workspace Attachments**
+   - Complete file/image attachment support in workspaces.
+   - Ensure backend stores/retrieves files securely for each user/project.
+   - Allow drag-and-drop or “Attach File” in the UI.
+
+4. **(Optional) Onboarding**
+   - Add a first-time-user onboarding modal or walkthrough.
+   - Guide users through “Create your first app/site with Codexel!” via chat and checklist.
+
+5. **Deployment-Readiness**
+   - Audit for any remaining Replit-only configs, and prepare for deployment to Vercel (frontend) and Render/Fly/Google Cloud (backend).
+   - Make sure environment variables (API keys, DB) are loaded from `.env` or host settings—not hardcoded.
+
+**Extra:**  
+- Add a “Test user mode” for demos, but require real auth for saving work.
+- Check all usage/analytics features so I can monitor real growth post-launch.
+
+**Do not stop at MVP. Build for a smooth, production-ready launch. Output a new README.md with all setup/deployment instructions.**
+
+---
+
+*If you want this as a single copy-pasteable text block for Replit’s AI, just copy the markdown above!*
+
+---
+
+**Next step for you:**  
+- Paste this into Replit AI, ChatGPT, or your dev’s ticket system as the “final mile” checklist.  
+- Once those TODOs are gone, you’ll be ready to deploy anywhere (and monetize).  
+- Want me to check anything else, or need sample code for auth/tracking? Just say so! ​:contentReference[oaicite:0]{index=0}​
