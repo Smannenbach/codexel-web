@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { storage } from '../storage';
 import { usageTracker } from '../services/usageTracker';
-import { isAuthenticated } from '../replitAuth';
+import { isAuthenticated } from '../auth';
 import { z } from 'zod';
 
 const router = Router();

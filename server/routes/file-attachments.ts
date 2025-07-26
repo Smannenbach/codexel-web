@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { storage } from '../storage';
 import { fileUploadService } from '../services/fileUploadService';
-import { isAuthenticated } from '../replitAuth';
+import { isAuthenticated } from '../auth';
 import { z } from 'zod';
 import path from 'path';
 import fs from 'fs';
