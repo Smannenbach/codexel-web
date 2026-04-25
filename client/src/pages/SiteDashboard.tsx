@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Globe, TrendingUp, Users, Plus, ExternalLink, Trash2, Settings, FileCode } from 'lucide-react';
+import { Globe, TrendingUp, Users, Plus, ExternalLink, Trash2, Settings, FileCode, Sparkles } from 'lucide-react';
 
 interface Site {
   id: number;
@@ -17,6 +17,7 @@ interface Site {
   monthlyVisitors: number;
   category: string;
   createdAt: string;
+  config?: any;
 }
 
 interface SiteStats {
@@ -80,6 +81,14 @@ export default function SiteDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sites'] });
       queryClient.invalidateQueries({ queryKey: ['site-stats'] });
+    },
+  });
+
+  const generateContentMutation = useMutation({
+    mutationFn: (siteId: number) => 
+      apiFetch('/api/factory/generate-content', { method: 'POST', body: JSON.stringify({ siteId }) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
     },
   });
 
@@ -187,6 +196,21 @@ export default function SiteDashboard() {
                         <td className="py-3 px-4">
                           <div className="font-medium">{site.name}</div>
                           <div className="text-gray-400 text-xs">{site.domain}</div>
+                          {site.config?.customContent?.pages && (
+                             <div className="mt-2 flex items-center gap-2">
+                               <div className="w-24 h-1 bg-gray-800 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-green-500" 
+                                    style={{ 
+                                      width: `${(site.config.customContent.pages.filter((p:any) => p.fullContentGenerated).length / site.config.customContent.pages.length) * 100}%` 
+                                    }} 
+                                  />
+                               </div>
+                               <span className="text-[10px] text-gray-500 uppercase font-bold tracking-tight">
+                                 {site.config.customContent.pages.filter((p:any) => p.fullContentGenerated).length}/{site.config.customContent.pages.length} Pages
+                               </span>
+                             </div>
+                          )}
                         </td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[site.status] ?? STATUS_COLORS.draft}`}>
@@ -226,6 +250,16 @@ export default function SiteDashboard() {
                               onClick={() => navigate(`/ide/${site.id}`)}
                             >
                               <FileCode className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-7 w-7 p-0 text-yellow-400 hover:text-white"
+                              title="Generate Full Content"
+                              onClick={() => generateContentMutation.mutate(site.id)}
+                              disabled={generateContentMutation.isPending}
+                            >
+                              <Sparkles className={`w-3.5 h-3.5 ${generateContentMutation.isPending ? 'animate-pulse' : ''}`} />
                             </Button>
                             <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-gray-400 hover:text-white">
                               <Settings className="w-3.5 h-3.5" />

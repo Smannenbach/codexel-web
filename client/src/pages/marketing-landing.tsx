@@ -6,164 +6,69 @@ import {
   ArrowRight, 
   Check, 
   Star, 
-  Users, 
   Zap, 
   Shield, 
   Rocket, 
   Brain,
-  Code2,
-  Sparkles,
   Globe,
   TrendingUp,
-  MessageSquare,
   Bot,
-  ChevronDown,
   Play,
-  Award,
   Target,
   Clock,
   Home,
-  Scale,
-  Stethoscope,
   Building2,
-  ShoppingCart,
-  Hotel
+  Layout,
+  Search,
+  Layers,
+  MousePointer2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { projectTemplates } from '@shared/templates';
 
-interface Feature {
-  icon: React.ComponentType<any>;
-  title: string;
-  description: string;
-  highlight?: boolean;
-}
-
-interface Testimonial {
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  avatar: string;
-  rating: number;
-}
-
-interface PricingPlan {
-  name: string;
-  price: number;
-  period: string;
-  description: string;
-  features: string[];
-  popular?: boolean;
-  cta: string;
-}
-
-const features: Feature[] = [
+const features = [
   {
-    icon: Brain,
-    title: "Multi-AI Orchestration",
-    description: "Harness GPT-4, Claude, Gemini, and XAI models in one unified platform for optimal results",
+    icon: Layers,
+    title: "Mass Fleet Deployment",
+    description: "Launch 150+ high-authority websites in a single click. Every domain is analyzed and deployed instantly.",
     highlight: true
   },
   {
-    icon: Code2,
-    title: "Three-Panel Workspace",
-    description: "AI Team Dashboard, Multimodal Chat, and Live Preview in an intuitive workspace design"
+    icon: Search,
+    title: "SEO God-Mode",
+    description: "110+ optimized pages per site automatically generated. City-specific landing pages and technical schema included.",
+    highlight: true
   },
   {
-    icon: Sparkles,
-    title: "3D AI Sales Agents",
-    description: "Create AI clones with 3D avatars, custom voices, and personalized sales conversations"
+    icon: Brain,
+    title: "Global AI Command",
+    description: "Control your entire empire with natural language. Broadcast updates to 242 domains simultaneously.",
+    highlight: true
   },
   {
-    icon: MessageSquare,
-    title: "Multimodal Chat Interface",
-    description: "Upload images, PDFs, documents and chat with AI about any content seamlessly"
-  },
-  {
-    icon: Rocket,
-    title: "One-Click Deployment",
-    description: "Deploy your AI applications instantly with automated SSL, CDN, and domain configuration"
+    icon: Globe,
+    title: "Hyper-Local Authority",
+    description: "Automatically generate unique content for 80+ cities per state, dominating local search results.",
   },
   {
     icon: Shield,
-    title: "Enterprise Security",
-    description: "Built-in security monitoring, error boundaries, and production-grade infrastructure"
-  }
-];
-
-const testimonials: Testimonial[] = [
-  {
-    name: "Sarah Chen",
-    role: "CEO",
-    company: "LegalTech Solutions",
-    content: "Codexel transformed our client acquisition process. Our AI sales agent handles 80% of initial consultations, freeing our lawyers for complex cases.",
-    avatar: "SC",
-    rating: 5
+    title: "Enterprise Infrastructure",
+    description: "Powered by Cloudflare, Vercel, and Supabase for 99.99% uptime and global edge performance.",
   },
   {
-    name: "Dr. Michael Rodriguez",
-    role: "Practice Owner",
-    company: "Rodriguez Dental Group",
-    content: "The marketing automation is incredible. We've seen 300% increase in qualified leads since implementing our AI-powered patient engagement system.",
-    avatar: "MR",
-    rating: 5
-  },
-  {
-    name: "Jennifer Walsh",
-    role: "Financial Advisor",
-    company: "Walsh Investment Partners",
-    content: "Building our client portal with AI agents took weeks instead of months. The ROI has been phenomenal - our clients love the 24/7 support.",
-    avatar: "JW",
-    rating: 5
-  }
-];
-
-const pricingPlans: PricingPlan[] = [
-  {
-    name: "Pro",
-    price: 29,
-    period: "month",
-    description: "Perfect for individual professionals and small teams",
-    features: [
-      "Multi-AI model access (GPT-4, Claude, Gemini)",
-      "3D AI sales agent creation",
-      "Unlimited projects and workspaces",
-      "Marketing automation tools",
-      "24/7 customer support",
-      "SSL certificates and hosting included"
-    ],
-    cta: "Start Free Trial"
-  },
-  {
-    name: "Enterprise",
-    price: 99,
-    period: "month",
-    description: "Advanced features for growing businesses and agencies",
-    features: [
-      "Everything in Pro",
-      "Advanced analytics and insights",
-      "White-label options",
-      "Priority support with dedicated account manager",
-      "Custom AI model training",
-      "Advanced security and compliance",
-      "Team collaboration tools",
-      "API access and integrations"
-    ],
-    popular: true,
-    cta: "Get Started"
+    icon: Bot,
+    title: "Self-Healing Content",
+    description: "AI continuously monitors and updates your site content based on real-time market trends.",
   }
 ];
 
 const stats = [
-  { number: "10,000+", label: "AI Applications Built" },
-  { number: "500+", label: "Business Templates" },
-  { number: "99.9%", label: "Uptime Guarantee" },
-  { number: "24/7", label: "AI Support" }
+  { number: "242", label: "Ready-to-Launch Domains" },
+  { number: "110+", label: "Pages per Website" },
+  { number: "100%", label: "SEO Optimized" },
+  { number: "< 60s", label: "Deployment Time" }
 ];
 
-function MarketingLanding() {
-  const [selectedFeature, setSelectedFeature] = useState(0);
+export default function MarketingLanding() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -175,100 +80,94 @@ function MarketingLanding() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-gray-950 text-white overflow-hidden font-sans">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-gray-950/90 backdrop-blur-xl border-b border-gray-800 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
+              <Zap className="w-5 h-5 text-white fill-current" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Codexel.ai
+            <span className="text-xl font-bold tracking-tight">
+              Codexel<span className="text-blue-500">.ai</span>
             </span>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('features')} className="text-gray-300 hover:text-white transition-colors">
-              Features
-            </button>
-            <button onClick={() => scrollToSection('templates')} className="text-gray-300 hover:text-white transition-colors">
-              Templates
-            </button>
-            <button onClick={() => scrollToSection('pricing')} className="text-gray-300 hover:text-white transition-colors">
-              Pricing
-            </button>
-            <button onClick={() => scrollToSection('testimonials')} className="text-gray-300 hover:text-white transition-colors">
-              Testimonials
-            </button>
+            <button onClick={() => scrollToSection('features')} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Features</button>
+            <button onClick={() => scrollToSection('fleet')} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Mass Deploy</button>
+            <button onClick={() => scrollToSection('seo')} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">SEO Engine</button>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => window.location.href = '/workspace'}>
-              Dashboard
+            <Button variant="ghost" className="text-gray-400 hover:text-white" onClick={() => window.location.href = '/factory'}>
+              Factory
             </Button>
             <Button 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              onClick={() => window.location.href = '/pricing'}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-6 rounded-full font-bold shadow-lg shadow-blue-900/40 transition-all"
+              onClick={() => window.location.href = '/factory'}
             >
-              Get Started
+              Launch Now
             </Button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="container mx-auto max-w-6xl">
+      <section className="relative pt-40 pb-32 px-6">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="container mx-auto max-w-6xl relative">
           <div className={cn(
             "text-center transition-all duration-1000",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           )}>
-            <Badge className="mb-6 bg-purple-500/20 text-purple-300 border-purple-500/30">
-              <Star className="w-3 h-3 mr-1" />
-              #1 AI Development Platform
+            <Badge className="mb-6 bg-blue-500/10 text-blue-400 border-blue-500/30 px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
+              The World's #1 AI Website Factory
             </Badge>
             
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent leading-tight">
-              Build AI Apps
+            <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
+              LAUNCH 150+ SITES
               <br />
-              <span className="text-white">Without Code</span>
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
+                IN ONE CLICK
+              </span>
             </h1>
             
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Create powerful AI applications, 3D sales agents, and marketing automation 
-              with our revolutionary no-code platform. Deploy in minutes, not months.
+            <p className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Don't just build a website. Build a **Digital Empire.** 
+              Codexel.ai automates mass-domain deployment with 100+ SEO-optimized pages per site.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-6 text-lg"
-                onClick={() => window.location.href = '/workspace'}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-10 py-7 text-xl font-black rounded-2xl shadow-2xl shadow-blue-900/40 transition-all"
+                onClick={() => window.location.href = '/factory'}
               >
-                Start Building Free
-                <ArrowRight className="w-5 h-5 ml-2" />
+                DEPLOY MY FLEET
+                <Rocket className="w-6 h-6 ml-3" />
               </Button>
               
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="px-8 py-6 text-lg border-gray-700 hover:bg-gray-800"
-                onClick={() => scrollToSection('demo')}
+                className="px-10 py-7 text-xl font-bold border-gray-800 hover:bg-gray-900 rounded-2xl text-gray-400 hover:text-white transition-all"
+                onClick={() => scrollToSection('features')}
               >
-                <Play className="w-5 h-5 mr-2" />
-                Watch Demo
+                <Play className="w-5 h-5 mr-3 fill-current" />
+                See How It Works
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto py-12 border-y border-gray-900 bg-gray-900/20 backdrop-blur-sm rounded-3xl">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">
+                <div key={index} className="text-center px-4 border-r last:border-0 border-gray-800">
+                  <div className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter">
                     {stat.number}
                   </div>
-                  <div className="text-gray-400 text-sm">
+                  <div className="text-blue-500 text-[10px] font-bold uppercase tracking-widest">
                     {stat.label}
                   </div>
                 </div>
@@ -279,18 +178,16 @@ function MarketingLanding() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 bg-gradient-to-b from-gray-950 to-gray-900">
+      <section id="features" className="py-32 px-6 bg-gray-950">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Everything You Need to Build
-              <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                AI-Powered Applications
-              </span>
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter">
+              DOMINATE THE
+              <span className="block text-blue-500">SEARCH RESULTS</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              From concept to deployment, our platform provides all the tools you need 
-              to create professional AI applications without writing a single line of code.
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-medium">
+              We've automated the entire SEO lifecycle. From domain analysis to 
+              deep internal linking and technical schema—everything is handled by AI.
             </p>
           </div>
 
@@ -299,21 +196,21 @@ function MarketingLanding() {
               <Card 
                 key={index}
                 className={cn(
-                  "bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700 transition-all duration-300 hover:scale-105",
-                  feature.highlight && "ring-2 ring-purple-500/50"
+                  "bg-gray-900/40 border-gray-800 transition-all duration-500 hover:border-blue-500/50 hover:bg-gray-900/60 rounded-3xl p-4",
+                  feature.highlight && "ring-1 ring-blue-500/20 shadow-2xl shadow-blue-900/10"
                 )}
               >
                 <CardHeader>
                   <div className={cn(
-                    "w-12 h-12 rounded-lg flex items-center justify-center mb-4",
-                    feature.highlight ? "bg-gradient-to-r from-purple-500 to-pink-500" : "bg-gray-700"
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-inner",
+                    feature.highlight ? "bg-blue-600 text-white" : "bg-gray-800 text-blue-500"
                   )}>
-                    <feature.icon className="w-6 h-6 text-white" />
+                    <feature.icon className="w-7 h-7" />
                   </div>
-                  <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
+                  <CardTitle className="text-2xl font-bold tracking-tight mb-4">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-300">{feature.description}</p>
+                  <p className="text-gray-400 leading-relaxed font-medium">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -321,292 +218,153 @@ function MarketingLanding() {
         </div>
       </section>
 
-      {/* Templates Section */}
-      <section id="templates" className="py-20 px-6">
+      {/* Fleet Management Section */}
+      <section id="fleet" className="py-32 px-6 bg-gradient-to-b from-gray-950 to-gray-900">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Industry-Specific Templates
-              <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Built for Your Business
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Choose from 50+ professionally designed templates for every industry. 
-              Each template includes specialized features, compliance requirements, and conversion optimization.
-            </p>
-          </div>
-
-          {/* Template Categories */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {[
-              { name: 'Real Estate', icon: Home, count: projectTemplates.filter(t => t.category === 'Real Estate').length, color: 'from-blue-500 to-cyan-500' },
-              { name: 'Legal Services', icon: Scale, count: projectTemplates.filter(t => t.category === 'Legal Services').length, color: 'from-amber-500 to-orange-500' },
-              { name: 'Healthcare', icon: Stethoscope, count: projectTemplates.filter(t => t.category === 'Healthcare').length, color: 'from-green-500 to-emerald-500' },
-              { name: 'Financial Services', icon: TrendingUp, count: projectTemplates.filter(t => t.category === 'Financial Services').length, color: 'from-purple-500 to-violet-500' },
-              { name: 'Technology', icon: Building2, count: projectTemplates.filter(t => t.category === 'Technology').length, color: 'from-indigo-500 to-blue-500' },
-              { name: 'Hospitality', icon: Hotel, count: projectTemplates.filter(t => t.category === 'Hospitality').length, color: 'from-pink-500 to-rose-500' }
-            ].map((category, index) => (
-              <Card key={index} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700 transition-all duration-300 hover:scale-105 cursor-pointer group">
-                <CardHeader className="text-center">
-                  <div className={cn(
-                    "w-16 h-16 rounded-xl bg-gradient-to-r mx-auto mb-4 flex items-center justify-center transition-transform group-hover:scale-110",
-                    category.color
-                  )}>
-                    <category.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <CardTitle className="text-xl mb-2">{category.name}</CardTitle>
-                  <div className="text-2xl font-bold text-purple-400">{category.count}+ Templates</div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-400 text-center">Professional templates designed specifically for {category.name.toLowerCase()} businesses</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Featured Templates */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold text-center mb-8">Featured Templates</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              {projectTemplates.slice(0, 6).map((template, index) => (
-                <Card key={index} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700 transition-all duration-300 hover:scale-105">
-                  <CardHeader>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="text-2xl">{template.icon}</div>
-                      <div>
-                        <CardTitle className="text-lg leading-tight">{template.name}</CardTitle>
-                        <Badge variant="secondary" className="text-xs mt-1">
-                          {template.category}
-                        </Badge>
-                      </div>
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+                Mass Fleet Engine
+              </Badge>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-tight">
+                ONE COMMAND.
+                <br />
+                242 DOMAINS.
+              </h2>
+              <p className="text-xl text-gray-400 leading-relaxed font-medium">
+                Our proprietary **Global AI Broadcast** system lets you push 
+                updates to your entire fleet simultaneously. Update rates, 
+                swap CTAs, or add new pages across every domain in seconds.
+              </p>
+              
+              <ul className="space-y-6">
+                {[
+                  "Dynamic wave-based deployment",
+                  "AI-driven niche and state detection",
+                  "Cloudflare Edge automation",
+                  "Real-time fleet health monitoring"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-4 text-gray-300 font-bold">
+                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3.5 h-3.5 text-white" />
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-300 text-sm mb-3 line-clamp-2">{template.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Clock className="w-3 h-3" />
-                        {template.estimatedTime}
-                      </div>
-                      <Badge 
-                        className={cn(
-                          "text-xs",
-                          template.difficulty === 'beginner' && "bg-green-500/20 text-green-300 border-green-500/30",
-                          template.difficulty === 'intermediate' && "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-                          template.difficulty === 'advanced' && "bg-red-500/20 text-red-300 border-red-500/30"
-                        )}
-                      >
-                        {template.difficulty}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <Button 
+                onClick={() => window.location.href = '/factory'}
+                className="bg-gray-800 hover:bg-gray-700 text-white px-8 h-14 rounded-xl font-bold transition-all border border-gray-700"
+              >
+                Access Fleet Dashboard
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
             </div>
-          </div>
-
-          {/* CTA to Templates Page */}
-          <div className="text-center">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-6 text-lg"
-              onClick={() => window.location.href = '/templates'}
-            >
-              View All Templates
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <p className="text-gray-400 mt-4">
-              Browse 50+ templates across all industries
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 px-6 bg-gradient-to-b from-gray-950 to-gray-900">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Trusted by Industry Leaders
-            </h2>
-            <p className="text-xl text-gray-300">
-              Join thousands of professionals who've transformed their businesses with AI
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700">
-                <CardHeader>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-gray-400">{testimonial.role}, {testimonial.company}</div>
+            
+            <div className="relative">
+              <div className="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50" />
+              <Card className="bg-gray-900 border-gray-800 relative shadow-2xl rounded-[40px] overflow-hidden border-2">
+                <div className="bg-gray-800 px-6 py-4 flex items-center gap-2 border-b border-gray-700">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
+                  <div className="ml-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Codexel Fleet Console</div>
+                </div>
+                <div className="p-8 space-y-6">
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-black text-blue-500 uppercase">Global Broadcast</div>
+                    <div className="p-4 bg-gray-950 rounded-2xl border border-gray-800 text-sm font-mono text-gray-400 italic">
+                      "Update interest rates to 6.25% on all Florida sites"
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <div className="grid grid-cols-2 gap-4">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="p-4 bg-gray-950/50 rounded-2xl border border-gray-800 flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <div className="space-y-1">
+                          <div className="text-[9px] font-bold text-gray-500 uppercase">Domain {i}</div>
+                          <div className="text-[10px] text-white font-black">ACTIVE</div>
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-300 italic">"{testimonial.content}"</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-6 bg-gradient-to-b from-gray-950 to-gray-900">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-gray-300">
-              Choose the plan that fits your needs. Upgrade or downgrade anytime.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {pricingPlans.map((plan, index) => (
-              <Card 
-                key={index}
-                className={cn(
-                  "relative bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700",
-                  plan.popular && "ring-2 ring-purple-500 scale-105"
-                )}
-              >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500">
-                    Most Popular
-                  </Badge>
-                )}
-                
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold">${plan.price}</span>
-                    <span className="text-gray-400">/{plan.period}</span>
-                  </div>
-                  <p className="text-gray-300">{plan.description}</p>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
-                      <span className="text-gray-300">{feature}</span>
-                    </div>
-                  ))}
-                  
-                  <Button 
-                    className={cn(
-                      "w-full mt-8",
-                      plan.popular 
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" 
-                        : "bg-gray-700 hover:bg-gray-600"
-                    )}
-                    onClick={() => window.location.href = '/pricing'}
-                  >
-                    {plan.cta}
+                  <Button className="w-full bg-blue-600 h-12 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-900/40">
+                    EXECTUE ACROSS 242 SITES
                   </Button>
-                </CardContent>
+                </div>
               </Card>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Build the Future?
+      {/* SEO Engine Section */}
+      <section id="seo" className="py-32 px-6">
+        <div className="container mx-auto max-w-6xl text-center">
+          <Badge className="mb-10 bg-green-500/10 text-green-400 border-green-500/30 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
+            Deep SEO Technology
+          </Badge>
+          <h2 className="text-4xl md:text-7xl font-black mb-12 tracking-tighter leading-tight">
+            110+ PAGES PER SITE.
+            <br />
+            <span className="text-blue-500">FULLY AUTOMATED.</span>
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join thousands of professionals already using Codexel.ai to transform their businesses with AI.
-            Start your free trial today.
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-20 font-medium">
+            Most AI builders create "thin" content. Codexel creates **authoritative networks.** 
+            Every site features deep topical hubs and city-level pages designed to own the Google SERP.
           </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-6 text-lg"
-              onClick={() => window.location.href = '/workspace'}
-            >
-              Start Free Trial
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            
-            <div className="text-sm text-gray-400">
-              No credit card required • 14-day free trial
-            </div>
+
+          <div className="grid md:grid-cols-4 gap-6">
+             {[
+               { icon: Target, title: "City Pages", desc: "80+ unique city landing pages per state" },
+               { icon: MousePointer2, title: "Topic Hubs", desc: "20+ deep-dive mortgage educational guides" },
+               { icon: Layout, title: "Technical SEO", desc: "Automated JSON-LD Schema & XML sitemaps" },
+               { icon: Rocket, title: "Index Pinging", desc: "Instant indexing requests to Google & Bing" }
+             ].map((item, i) => (
+               <div key={i} className="p-8 bg-gray-900/20 border border-gray-900 rounded-3xl hover:border-gray-800 transition-all text-left group">
+                 <item.icon className="w-10 h-10 text-blue-500 mb-6 transition-transform group-hover:scale-110" />
+                 <h4 className="text-lg font-black text-white mb-2">{item.title}</h4>
+                 <p className="text-sm text-gray-500 font-medium">{item.desc}</p>
+               </div>
+             ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 border-t border-gray-800 py-12 px-6">
+      <footer className="bg-gray-950 border-t border-gray-900 py-20 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold">Codexel.ai</span>
-              </div>
-              <p className="text-gray-400">
-                The future of AI application development is here.
-              </p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="space-y-6">
+               <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-white fill-current" />
+                  </div>
+                  <span className="text-xl font-bold tracking-tight">Codexel.ai</span>
+               </div>
+               <p className="text-gray-500 text-sm font-medium max-w-xs">
+                 The future of high-scale AI website deployment is here. 
+                 Powering the world's most advanced lending networks.
+               </p>
             </div>
             
-            <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <div className="space-y-2 text-gray-400">
-                <button onClick={() => scrollToSection('features')} className="hover:text-white transition-colors">Features</button>
-                <button onClick={() => scrollToSection('pricing')} className="hover:text-white transition-colors">Pricing</button>
-                <button onClick={() => window.location.href = '/templates'} className="hover:text-white transition-colors">Templates</button>
-                <div>Integrations</div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <div className="space-y-2 text-gray-400">
-                <div>About</div>
-                <div>Blog</div>
-                <div>Careers</div>
-                <div>Contact</div>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <div className="space-y-2 text-gray-400">
-                <div>Documentation</div>
-                <div>Help Center</div>
-                <div>Status</div>
-                <div>Community</div>
-              </div>
+            <div className="flex gap-12 text-sm font-bold uppercase tracking-widest text-gray-500">
+               <a href="/factory" className="hover:text-blue-500 transition-colors">Factory</a>
+               <a href="/deploy" className="hover:text-blue-500 transition-colors">Pipeline</a>
+               <a href="/sites" className="hover:text-blue-500 transition-colors">Dashboard</a>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Codexel.ai. All rights reserved.</p>
+          <div className="border-t border-gray-900 mt-20 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">
+            <p>&copy; 2026 Codexel.ai. All rights reserved.</p>
+            <div className="flex gap-10">
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms</a>
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-export default MarketingLanding;

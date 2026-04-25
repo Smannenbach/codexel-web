@@ -230,4 +230,18 @@ async function processBroadcast(targetSites: any[], instruction: string) {
   }
 }
 
+import { contentWorker } from '../services/content-worker';
+
+// ... existing routes ...
+
+router.post('/generate-content', isAuthenticated, async (req: Request, res: Response) => {
+  try {
+    const { siteId } = z.object({ siteId: z.number() }).parse(req.body);
+    await contentWorker.queueSiteForGeneration(siteId);
+    res.json({ success: true, message: 'Site queued for full content generation.' });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export { router as factoryRoutes };

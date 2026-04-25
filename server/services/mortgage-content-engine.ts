@@ -368,6 +368,49 @@ function generateTemplateCopy(a: DomainAnalysis): SiteContent {
   };
 }
 
+/**
+ * Generates full, SEO-optimized body text for a specific site page.
+ */
+export async function generateFullPageContent(
+  site: { name: string; domain: string; niche: string; state: string },
+  page: { title: string; slug: string }
+): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return `Full content for ${page.title} at ${site.name}.`;
+
+  const { default: OpenAI } = await import('openai');
+  const openai = new OpenAI({ apiKey });
+
+  const prompt = `Write a professional, SEO-optimized mortgage article for the following page:
+  
+  SITE: ${site.name} (${site.domain})
+  NICHE: ${site.niche}
+  LOCATION: ${site.state}
+  PAGE TITLE: ${page.title}
+  
+  The content should be approximately 500-800 words. Include:
+  - An engaging introduction
+  - 3-4 subheadings (H2)
+  - Key benefits or points (Bullet points)
+  - A concluding call-to-action
+  
+  Tone: Professional, authoritative, yet accessible for real estate investors and homeowners.
+  Format: HTML-ready text (use <p>, <h2>, <ul>, <li> tags).`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', // cost-effective for 100+ pages
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+    });
+
+    return response.choices[0]?.message?.content || `<p>Content currently unavailable for ${page.title}.</p>`;
+  } catch (err) {
+    console.error(`[ContentEngine] Failed to generate full content for ${page.slug}:`, err);
+    return `<p>Expert mortgage insights on ${page.title} for ${site.name}. Contact us to learn more.</p>`;
+  }
+}
+
 function generateDeepStructure(a: DomainAnalysis): any[] {
   const brand = a.brandName;
   const state = a.state || 'Nationwide';
