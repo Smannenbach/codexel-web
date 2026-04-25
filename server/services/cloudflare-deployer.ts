@@ -107,6 +107,22 @@ export async function enableSSL(zoneId: string): Promise<boolean> {
 }
 
 /**
+ * Submit sitemap to search engines for massive indexing.
+ */
+export async function submitToSearchEngines(domain: string): Promise<void> {
+  const sitemapUrl = `https://${domain}/sitemap.xml`;
+  try {
+    // Google Search Console (Ping) - Legacy ping still works for triggers
+    await fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`);
+    // Bing (Ping)
+    await fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`);
+    console.log(`[SEO] Sitemap submitted for ${domain}`);
+  } catch (err) {
+    console.warn(`[SEO] Failed to submit sitemap for ${domain}:`, err);
+  }
+}
+
+/**
  * Apply performance rules: minify, HTTP/2, Brotli.
  */
 export async function applyPerformanceRules(zoneId: string): Promise<void> {
@@ -159,6 +175,11 @@ export async function deploySite(domain: string, siteId: number): Promise<Deploy
         result.dnsConfigured = dnsOk;
         result.sslStatus = sslOk ? 'active' : 'pending';
         result.status = dnsOk ? 'live' : 'staging';
+
+        // SEO: Submit to search engines if live
+        if (dnsOk) {
+          await submitToSearchEngines(domain);
+        }
       }
     } catch (err) {
       result.error = err instanceof Error ? err.message : String(err);

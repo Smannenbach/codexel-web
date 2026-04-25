@@ -52,24 +52,37 @@ export class SEOService {
     description?: string;
     config?: Record<string, unknown>;
     domain?: string;
-  }): SEOMetaTags {
-    const title = `${site.name} | DSCR Loans & Mortgage Solutions`;
-    const description = site.description ??
+  }, page?: { title: string; slug: string; type?: string }): SEOMetaTags {
+    const isHome = !page || page.slug === 'home' || page.slug === '/';
+    
+    let title = `${site.name} | DSCR Loans & Mortgage Solutions`;
+    if (!isHome && page) {
+      title = `${page.title} | ${site.name}`;
+    }
+
+    let description = site.description ??
       `Get fast DSCR loans and mortgage solutions from ${site.name}. No tax returns required. Qualify based on rental income. Rates from 6.5%. Close in 21 days.`;
+    
+    if (!isHome && page) {
+      description = `${page.title} for real estate investors. ${site.name} provides expert mortgage solutions and competitive rates. Close in as few as 21 days.`;
+    }
+
     const keywords = [
       'DSCR loan', 'DSCR mortgage', 'investment property loan',
       'no income verification mortgage', 'rental property loan',
       'mortgage refinance', site.name,
-    ].join(', ');
+    ];
+    
+    if (page?.title) keywords.unshift(page.title);
 
     return {
       title,
       description,
-      keywords,
+      keywords: keywords.join(', '),
       ogTitle: title,
       ogDescription: description,
       ogType: 'website',
-      canonicalUrl: site.domain ? `https://${site.domain}` : undefined,
+      canonicalUrl: site.domain ? `https://${site.domain}${page?.slug ? `/${page.slug}` : ''}` : undefined,
       robots: 'index, follow',
     };
   }
@@ -377,24 +390,54 @@ export class SEOService {
     };
   }
 
-  buildSitesSEOConfig(site: { name: string; description?: string; domain?: string; config?: Record<string, unknown> }, template: string): SiteSEOConfig {
+  buildSitesSEOConfig(site: { name: string; description?: string; domain?: string; config?: Record<string, any> }, template: string): SiteSEOConfig {
     const niche = template.includes('dscr') ? 'dscr' : template.includes('refi') ? 'refinance' : 'dscr';
+    
+    // Get all pages from site config if available
+    const pages = (site.config?.customContent?.pages as any[]) || [];
+    
     const metaTags = this.generateMetaTags(site);
     const keywordClusters = this.clusterKeywords(niche);
+    
+    // Generate structured data for the site as a whole
     const structuredData = [
-      this.generateStructuredData('MortgageLender', { name: site.name, url: site.domain ? `https://${site.domain}` : '' }),
-      this.generateStructuredData('FAQPage', {
-        faqs: this.generateGEOHints(niche, site.description ?? '').questionsAnswered.map(q => ({ q: q.question, a: q.answer })),
+      this.generateStructuredData('MortgageLender', { 
+        name: site.name, 
+        url: site.domain ? `https://${site.domain}` : '',
+        nmls: site.config?.nmlsNumber,
+        city: site.config?.address,
       }),
     ];
+
+    // Add FAQ Schema if we have FAQs
+    const faqs = site.config?.customContent?.faqs;
+    if (faqs) {
+      try {
+        const parsedFaqs = JSON.parse(faqs);
+        structuredData.push(this.generateStructuredData('FAQPage', {
+          faqs: parsedFaqs.map((f: any) => ({ q: f.question, a: f.answer })),
+        }));
+      } catch (e) {}
+    }
+
     const geoHints = this.generateGEOHints(niche, site.description ?? '');
-    const score = this.scorePage({ title: metaTags.title, metaDescription: metaTags.description, h1: site.name, contentLength: 1200, hasSchema: true });
+    const score = this.scorePage({ 
+      title: metaTags.title, 
+      metaDescription: metaTags.description, 
+      h1: site.name, 
+      contentLength: 1500, 
+      hasSchema: true 
+    });
+
     const sitemapConfig = {
       domain: site.domain,
       pages: [
         { path: '/', priority: 1.0, changefreq: 'daily' },
-        { path: '/apply', priority: 0.9, changefreq: 'weekly' },
-        { path: '/dscr-calculator', priority: 0.8, changefreq: 'weekly' },
+        ...pages.map(p => ({
+          path: `/${p.slug}`,
+          priority: p.slug === 'home' ? 1.0 : 0.7,
+          changefreq: 'weekly'
+        }))
       ],
     };
 

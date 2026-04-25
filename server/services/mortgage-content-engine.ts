@@ -5,6 +5,8 @@
  * Falls back to high-quality template copy if no AI API key is set.
  */
 
+import { seoService } from './seo-service';
+
 export interface DomainAnalysis {
   domain: string;
   niche: 'dscr' | 'refinance' | 'purchase' | 'hard-money' | 'bridge' | 'general';
@@ -393,8 +395,8 @@ function generateDeepStructure(a: DomainAnalysis): any[] {
 
   // Geo pages (50-80 cities in the state)
   const cities = a.stateCode === 'TX' 
-    ? ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi']
-    : ['Phoenix', 'Miami', 'Chicago', 'Atlanta', 'Denver', 'Seattle', 'Nashville', 'Las Vegas'];
+    ? ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Laredo', 'Lubbock', 'Garland']
+    : ['Phoenix', 'Miami', 'Chicago', 'Atlanta', 'Denver', 'Seattle', 'Nashville', 'Las Vegas', 'Portland', 'Boston', 'Philadelphia', 'Charlotte'];
   
   const geoPages = cities.map(city => ({
     slug: `${city.toLowerCase()}-${niche}-loans`,
@@ -415,5 +417,18 @@ function generateDeepStructure(a: DomainAnalysis): any[] {
     });
   }
 
-  return allPages;
+  // Apply SEO Service to every page
+  return allPages.map(p => {
+    const meta = seoService.generateMetaTags({ name: brand, domain: a.domain }, p);
+    return {
+      ...p,
+      metaTitle: meta.title,
+      metaDescription: meta.description,
+      schema: seoService.generateStructuredData('Service', {
+        name: p.title,
+        description: meta.description,
+        areaServed: p.slug.includes('-loans') ? p.title.split(' ')[0] : state
+      })
+    };
+  });
 }
